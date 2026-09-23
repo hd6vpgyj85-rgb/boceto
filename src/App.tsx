@@ -19,6 +19,7 @@ import Privacy from "./pages/public/Privacy";
 
 import Dashboard from "./pages/admin/Dashboard";
 import Products from "./pages/admin/Products";
+import ProductFormPage from "./pages/admin/ProductFormPage";
 import Categories from "./pages/admin/Categories";
 import Orders from "./pages/admin/Orders";
 import Reviews from "./pages/admin/Reviews";
@@ -54,6 +55,8 @@ export default function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="productos" element={<Products />} />
+              <Route path="productos/nuevo" element={<ProductFormPage />} />
+              <Route path="productos/:id" element={<ProductFormPage />} />
               <Route path="categorias" element={<Categories />} />
               <Route path="pedidos" element={<Orders />} />
               <Route path="resenas" element={<Reviews />} />

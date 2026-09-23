@@ -111,13 +111,13 @@ create index if not exists idx_orders_archived on orders (archived_at);
 create table if not exists reviews (
   id uuid primary key default gen_random_uuid(),
   name text not null,
-  level text,
   rating int not null default 5 check (rating between 1 and 5),
   quote text not null default '',
   image_url text,
   status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
   created_at timestamptz not null default now()
 );
+alter table reviews drop column if exists level;
 
 create index if not exists idx_reviews_status on reviews (status);
 
@@ -650,14 +650,14 @@ select * from (values
 ) as v(name, price, sale_price, on_sale, levels, category, brand, stock, vendor, sizes, description, images, cover_fit, featured)
 where not exists (select 1 from products);
 
-insert into reviews (name, level, rating, quote, image_url, status)
+insert into reviews (name, rating, quote, image_url, status)
 select * from (values
-  ('Camila Restrepo', 'arabe', 5, 'El Oud Al Layl dura toda la noche, huele carísimo. Ya es mi fragancia de firma.', 'https://picsum.photos/seed/noire-review-1/200/200', 'approved'),
-  ('Juan Pablo Gómez', 'disenador', 5, 'Pedí el Musgo Noir y llegó súper rápido, huele igual de elegante que los originales.', 'https://picsum.photos/seed/noire-review-2/200/200', 'approved'),
-  ('Valentina Ríos', 'nicho', 4, 'Excelente atención por WhatsApp, me asesoraron bien para elegir mi fragancia de nicho.', 'https://picsum.photos/seed/noire-review-3/200/200', 'approved'),
-  ('Andrés Felipe Torres', 'nicho', 5, 'El difusor de Oud & Rosa dejó mi sala oliendo delicioso por semanas enteras.', 'https://picsum.photos/seed/noire-review-4/200/200', 'approved'),
-  ('Mariana Londoño', 'arabe', 5, 'Mi fragancia favorita es el Ámbar Real, ya voy en el tercer frasco este año.', 'https://picsum.photos/seed/noire-review-5/200/200', 'approved'),
-  ('Santiago Herrera', 'disenador', 4, 'Buenos precios comparado con otras perfumerías de Medellín, y llegó bien empacado.', 'https://picsum.photos/seed/noire-review-6/200/200', 'approved'),
-  ('Isabella Cardona', 'nicho', 5, 'Me encantó el programa de fidelidad, ya reclamé mi primer premio y fue muy fácil.', 'https://picsum.photos/seed/noire-review-7/200/200', 'approved')
-) as v(name, level, rating, quote, image_url, status)
+  ('Camila Restrepo', 5, 'El Oud Al Layl dura toda la noche, huele carísimo. Ya es mi fragancia de firma.', 'https://picsum.photos/seed/noire-review-1/200/200', 'approved'),
+  ('Juan Pablo Gómez', 5, 'Pedí el Musgo Noir y llegó súper rápido, huele igual de elegante que los originales.', 'https://picsum.photos/seed/noire-review-2/200/200', 'approved'),
+  ('Valentina Ríos', 4, 'Excelente atención por WhatsApp, me asesoraron bien para elegir mi fragancia de nicho.', 'https://picsum.photos/seed/noire-review-3/200/200', 'approved'),
+  ('Andrés Felipe Torres', 5, 'El difusor de Oud & Rosa dejó mi sala oliendo delicioso por semanas enteras.', 'https://picsum.photos/seed/noire-review-4/200/200', 'approved'),
+  ('Mariana Londoño', 5, 'Mi fragancia favorita es el Ámbar Real, ya voy en el tercer frasco este año.', 'https://picsum.photos/seed/noire-review-5/200/200', 'approved'),
+  ('Santiago Herrera', 4, 'Buenos precios comparado con otras perfumerías de Medellín, y llegó bien empacado.', 'https://picsum.photos/seed/noire-review-6/200/200', 'approved'),
+  ('Isabella Cardona', 5, 'Me encantó el programa de fidelidad, ya reclamé mi primer premio y fue muy fácil.', 'https://picsum.photos/seed/noire-review-7/200/200', 'approved')
+) as v(name, rating, quote, image_url, status)
 where not exists (select 1 from reviews);

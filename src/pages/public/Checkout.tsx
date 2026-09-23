@@ -125,7 +125,6 @@ export default function Checkout() {
         }
         await supabase.from("reviews").insert({
           name,
-          level: null,
           rating: reviewRating,
           quote: reviewQuote.trim(),
           image_url: imageUrl,
