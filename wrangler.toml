@@ -1,4 +1,8 @@
-name = "noire-perfumeria"
+# [MODIFICAR MANUAL] Nombre del Worker: debe coincidir con el nombre del
+# proyecto que creaste en el dashboard de Cloudflare (Workers & Pages), o
+# Workers Builds lo sobrescribe en cada deploy y abre un PR automático para
+# "corregir" este archivo.
+name = "websiteboceto"
 compatibility_date = "2024-12-01"
 
 # Genera dist/ automáticamente antes de "wrangler deploy". Esto hace el deploy
