@@ -14,12 +14,13 @@
 .admin-header-inner {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 20px;
-  height: 64px;
+  padding: 10px 20px;
+  min-height: 64px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 10px 16px;
 }
 
 .admin-logo {
@@ -98,6 +99,9 @@
 
 @media (max-width: 720px) {
   .admin-quick-access {
-    display: none;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
   }
 }

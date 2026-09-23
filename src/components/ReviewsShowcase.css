@@ -4,15 +4,20 @@
 
 .reviews-mobile {
   position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 .reviews-mobile-track {
   display: flex;
+  width: 100%;
   transition: transform var(--transition-slow) var(--ease-out);
 }
 
 .reviews-mobile-slide {
   flex: 0 0 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;

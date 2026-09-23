@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Review } from "../types";
 import ReviewCard from "./ReviewCard";
 import StarRating from "./StarRating";
@@ -9,13 +9,37 @@ interface ReviewsShowcaseProps {
   reviews: Review[];
 }
 
+const AUTOPLAY_MS = 8000;
+
 export default function ReviewsShowcase({ reviews }: ReviewsShowcaseProps) {
   const [mobileIndex, setMobileIndex] = useState(0);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const count = reviews.length;
+
+  useEffect(() => {
+    if (count < 2) return;
+    const id = window.setInterval(() => {
+      setMobileIndex((i) => (i + 1) % count);
+    }, AUTOPLAY_MS);
+    return () => window.clearInterval(id);
+  }, [count]);
 
   if (reviews.length === 0) return null;
 
   const images = reviews.map((r) => r.image_url).filter((url): url is string => !!url);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null || count < 2) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    if (delta > 40) setMobileIndex((i) => (i - 1 + count) % count);
+    else if (delta < -40) setMobileIndex((i) => (i + 1) % count);
+    touchStartX.current = null;
+  };
 
   return (
     <div className="reviews-showcase">
@@ -29,7 +53,7 @@ export default function ReviewsShowcase({ reviews }: ReviewsShowcaseProps) {
         ))}
       </div>
 
-      <div className="reviews-mobile">
+      <div className="reviews-mobile" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div
           className="reviews-mobile-track"
           style={{ transform: `translateX(-${mobileIndex * 100}%)` }}
