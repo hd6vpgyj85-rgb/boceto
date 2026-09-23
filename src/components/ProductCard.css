@@ -1,0 +1,102 @@
+.product-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--glow-accent-sm);
+  border-color: rgba(var(--color-accent-rgb), 0.4);
+}
+
+.product-card-image-wrap {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--color-bg-elevated);
+}
+
+.product-card-image {
+  width: 100%;
+  height: 100%;
+  transition: transform var(--transition-slow) var(--ease-out);
+}
+
+.product-card:hover .product-card-image {
+  transform: scale(1.06);
+}
+
+.product-card-placeholder {
+  background: linear-gradient(135deg, var(--color-bg-elevated), var(--color-bg-card));
+}
+
+.product-card-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--glow-accent-sm);
+}
+
+.product-card-badge-out {
+  left: auto;
+  right: 10px;
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-strong);
+  box-shadow: none;
+}
+
+.product-card-body {
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.product-card-brand {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-dim);
+}
+
+.product-card-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--color-text);
+}
+
+.product-card-price-row {
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.product-card-price {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--color-accent);
+}
+
+.product-card-price-old {
+  font-size: 0.82rem;
+  color: var(--color-text-dim);
+  text-decoration: line-through;
+}

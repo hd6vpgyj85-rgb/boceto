@@ -1,0 +1,14 @@
+name = "noire-perfumeria"
+compatibility_date = "2024-12-01"
+
+# Genera dist/ automáticamente antes de "wrangler deploy". Esto hace el deploy
+# robusto aunque el "Build command" del dashboard de Cloudflare esté vacío o
+# no se haya configurado (causa típica del error "Could not detect a
+# directory containing static files").
+[build]
+command = "npm install && npm run build"
+
+# Despliegue como sitio estático (Workers Static Assets) para la SPA generada por Vite.
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"
