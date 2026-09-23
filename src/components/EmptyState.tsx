@@ -1,31 +1,29 @@
 import type { ReactNode } from "react";
+import { BagIcon, BoxIcon, SearchIcon } from "./Icons";
 import "./EmptyState.css";
 
 interface EmptyStateProps {
   title: string;
   description?: string;
   action?: ReactNode;
+  icon?: "bag" | "search" | "box";
 }
 
-export default function EmptyState({ title, description, action }: EmptyStateProps) {
+export default function EmptyState({ title, description, action, icon = "bag" }: EmptyStateProps) {
+  const Icon = icon === "search" ? SearchIcon : icon === "box" ? BoxIcon : BagIcon;
+
   return (
     <div className="empty-state">
-      <svg
-        width="90"
-        height="90"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        className="empty-state-icon"
-      >
-        <circle cx="9" cy="21" r="1" />
-        <circle cx="19" cy="21" r="1" />
-        <path d="M1 1h4l2.6 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
-      </svg>
+      <div className="empty-state-art" aria-hidden="true">
+        <span className="empty-state-ring" />
+        <span className="empty-state-ring empty-state-ring-2" />
+        <span className="empty-state-icon">
+          <Icon size={44} strokeWidth={1.5} />
+        </span>
+      </div>
       <h3 className="empty-state-title">{title}</h3>
       {description && <p className="empty-state-desc">{description}</p>}
-      {action}
+      {action && <div className="empty-state-action">{action}</div>}
     </div>
   );
 }

@@ -4,8 +4,14 @@
       <stop offset="0%" stop-color="#0a0a0c"/>
       <stop offset="100%" stop-color="#0e1a1f"/>
     </linearGradient>
+    <radialGradient id="glow" cx="0.85" cy="0.1" r="0.6">
+      <stop offset="0%" stop-color="#00d9ff" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#00d9ff" stop-opacity="0"/>
+    </radialGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <text x="600" y="330" font-family="Georgia, serif" font-size="110" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="14">NOIRE</text>
-  <text x="600" y="390" font-family="Georgia, serif" font-size="32" fill="#00d9ff" text-anchor="middle" letter-spacing="6">PERFUMERÍA</text>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <text x="600" y="330" font-family="Arial Black, Helvetica, sans-serif" font-size="120" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="16">BOCETO</text>
+  <text x="600" y="395" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#00d9ff" text-anchor="middle" letter-spacing="10">TIENDA EN LÍNEA</text>
+  <rect x="540" y="430" width="120" height="4" rx="2" fill="#00d9ff"/>
 </svg>

@@ -1,33 +1,54 @@
 .search-title {
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-size: clamp(2rem, 5vw, 3.2rem);
   text-transform: uppercase;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
+  animation: fade-up 500ms var(--ease-out) backwards;
 }
 
 .search-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
-  padding: 14px 20px;
-  margin-bottom: 22px;
+  padding: 6px 8px 6px 22px;
+  margin-bottom: 16px;
   color: var(--color-text-dim);
-  transition: border-color var(--transition-fast) var(--ease-out), box-shadow var(--transition-fast) var(--ease-out);
+  transition:
+    border-color var(--transition-base) var(--ease-out),
+    box-shadow var(--transition-base) var(--ease-out),
+    color var(--transition-base) var(--ease-out);
+  animation: fade-up 500ms var(--ease-out) 80ms backwards;
 }
 
 .search-bar:focus-within {
   border-color: var(--color-accent);
-  box-shadow: var(--glow-accent-sm);
+  box-shadow: var(--glow-accent-md);
+  color: var(--color-accent);
+}
+
+.search-bar svg {
+  flex-shrink: 0;
 }
 
 .search-bar input {
   flex: 1;
+  min-width: 0;
   background: transparent;
   border: none;
   color: var(--color-text);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
+  padding: 12px 0;
+}
+
+.search-bar input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search-bar input::placeholder {
+  color: var(--color-text-dim);
+  transition: opacity var(--transition-base) var(--ease-out);
 }
 
 .search-bar input:focus {
@@ -35,23 +56,51 @@
 }
 
 .search-clear {
-  font-size: 1.3rem;
-  color: var(--color-text-dim);
-  width: 26px;
-  height: 26px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  animation: pop 260ms var(--ease-out);
+  transition: color var(--transition-fast) var(--ease-out), background var(--transition-fast) var(--ease-out), transform var(--transition-base) var(--ease-out);
 }
 
 .search-clear:hover {
   color: var(--color-text);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(90deg);
 }
 
-.search-count {
+.search-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 26px;
+  font-size: 0.8rem;
   color: var(--color-text-dim);
-  font-size: 0.85rem;
-  margin-bottom: 18px;
+  animation: fade-up 500ms var(--ease-out) 160ms backwards;
+}
+
+.search-shortcut {
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast) var(--ease-out);
+}
+
+.search-shortcut:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+.search-shortcut-sale {
+  color: var(--color-accent);
+  border-color: rgba(var(--color-accent-rgb), 0.35);
 }

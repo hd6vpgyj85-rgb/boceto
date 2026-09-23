@@ -1,0 +1,299 @@
+.customers-total {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-accent);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(var(--color-accent-rgb), 0.1);
+}
+
+.customers-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.customers-cell .admin-row-thumb {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.customers-cell strong {
+  display: block;
+}
+
+.customers-tier {
+  font-size: 0.72rem;
+  color: var(--color-text-dim);
+}
+
+.customers-purchases {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--color-accent);
+}
+
+.customer-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.12), rgba(var(--color-accent-rgb), 0.02));
+  border: 1px solid rgba(var(--color-accent-rgb), 0.25);
+}
+
+.customer-card-qr {
+  width: 110px;
+  height: 110px;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  flex-shrink: 0;
+  animation: pop 400ms var(--ease-out) backwards;
+}
+
+.customer-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.customer-card-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-dim);
+}
+
+.customer-card-code {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  letter-spacing: 0.12em;
+  color: var(--color-accent);
+}
+
+.customer-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.customer-card-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.customer-purchases {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.customer-purchases-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition:
+    border-color var(--transition-fast) var(--ease-out),
+    color var(--transition-fast) var(--ease-out),
+    transform var(--transition-fast) var(--ease-out);
+}
+
+.customer-purchases-btn:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.customer-purchases-btn:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+.customer-purchases-btn:disabled {
+  opacity: 0.35;
+}
+
+.customer-purchases-value {
+  min-width: 36px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  animation: pop 260ms var(--ease-out);
+}
+
+.customer-purchases-next {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.customer-claims-title {
+  margin: 26px 0 12px;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.customer-claims-empty {
+  font-size: 0.85rem;
+  color: var(--color-text-dim);
+}
+
+.customer-claims {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.customer-claims li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  animation: admin-rise 350ms var(--ease-out) backwards;
+  transition: border-color var(--transition-base) var(--ease-out);
+}
+
+.customer-claims li:not(.is-claimed) {
+  border-color: rgba(255, 184, 77, 0.35);
+}
+
+.customer-claim-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-star);
+  background: rgba(255, 184, 77, 0.12);
+}
+
+.customer-claims li.is-claimed .customer-claim-icon {
+  color: var(--color-success);
+  background: rgba(53, 214, 138, 0.12);
+}
+
+.customer-claim-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.86rem;
+}
+
+.customer-claim-info small {
+  font-size: 0.74rem;
+  color: var(--color-text-dim);
+}
+
+.customers-tiers {
+  margin-top: 56px;
+}
+
+.customers-tiers-title {
+  font-size: 1.3rem;
+}
+
+.customers-tier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.customers-tier-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  animation: admin-rise 450ms var(--ease-out) backwards;
+  transition:
+    border-color var(--transition-base) var(--ease-out),
+    transform var(--transition-base) var(--ease-out),
+    box-shadow var(--transition-base) var(--ease-out);
+}
+
+.customers-tier-card:hover {
+  border-color: rgba(var(--color-accent-rgb), 0.4);
+  transform: translateY(-3px);
+  box-shadow: var(--glow-accent-sm);
+}
+
+.customers-tier-step {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+}
+
+.customers-tier-required {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.customers-tier-required small {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.customers-tier-reward {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  flex: 1;
+}
+
+.customers-tier-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.customers-tier-meta span {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-muted);
+}
+
+.customers-tier-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+@media (max-width: 640px) {
+  .customer-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .customer-card-actions {
+    justify-content: center;
+  }
+
+  .customer-claims li {
+    flex-wrap: wrap;
+  }
+}

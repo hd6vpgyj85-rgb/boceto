@@ -1,0 +1,81 @@
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding-top: 80px;
+  padding-bottom: 100px;
+}
+
+.not-found-art {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 22vw, 11rem);
+  line-height: 1;
+  color: var(--color-text);
+}
+
+.not-found-digit {
+  animation: not-found-rise 700ms var(--ease-out) both;
+}
+
+.not-found-digit:last-child {
+  animation-delay: 160ms;
+}
+
+.not-found-bag {
+  display: block;
+  width: 0.78em;
+  height: 0.78em;
+  color: var(--color-accent);
+  filter: drop-shadow(0 0 18px rgba(var(--color-accent-rgb), 0.5));
+  animation:
+    not-found-rise 700ms var(--ease-out) 80ms both,
+    not-found-sway 3.2s ease-in-out 900ms infinite;
+  transform-origin: 50% 20%;
+}
+
+.not-found-title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  text-transform: uppercase;
+  animation: not-found-rise 700ms var(--ease-out) 240ms both;
+}
+
+.not-found-text {
+  color: var(--color-text-muted);
+  max-width: 46ch;
+  animation: not-found-rise 700ms var(--ease-out) 320ms both;
+}
+
+.not-found-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+  animation: not-found-rise 700ms var(--ease-out) 400ms both;
+}
+
+@keyframes not-found-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes not-found-sway {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}

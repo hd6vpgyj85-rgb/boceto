@@ -15,6 +15,9 @@ export interface SiteSettings {
   map_url: string | null;
   footer_note: string;
   store_photo_url: string | null;
+  hero_title: string;
+  announcement: string;
+  currency: string;
   updated_at: string;
 }
 

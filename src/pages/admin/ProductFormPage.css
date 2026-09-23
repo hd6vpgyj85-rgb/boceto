@@ -118,3 +118,95 @@
 .product-form-delete {
   margin-top: -6px;
 }
+
+.product-form-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color var(--transition-fast) var(--ease-out), gap var(--transition-fast) var(--ease-out);
+}
+
+.product-form-back:hover {
+  gap: 10px;
+}
+
+.product-form-section {
+  animation: admin-rise 480ms var(--ease-out) backwards;
+  transition:
+    border-color var(--transition-base) var(--ease-out),
+    box-shadow var(--transition-base) var(--ease-out);
+}
+
+.product-form-section:nth-of-type(2) {
+  animation-delay: 50ms;
+}
+
+.product-form-section:nth-of-type(3) {
+  animation-delay: 100ms;
+}
+
+.product-form-section:nth-of-type(4) {
+  animation-delay: 150ms;
+}
+
+.product-form-section:nth-of-type(5) {
+  animation-delay: 200ms;
+}
+
+.product-form-section:nth-of-type(6) {
+  animation-delay: 250ms;
+}
+
+.product-form-section:focus-within {
+  border-color: rgba(var(--color-accent-rgb), 0.35);
+  box-shadow: var(--glow-accent-sm);
+}
+
+.product-form-section:focus-within h2 {
+  color: var(--color-accent);
+}
+
+.product-form-section h2 {
+  transition: color var(--transition-base) var(--ease-out);
+}
+
+.product-form-thumb {
+  animation: pop 360ms var(--ease-out) backwards;
+  transition:
+    border-color var(--transition-fast) var(--ease-out),
+    transform var(--transition-base) var(--ease-out);
+}
+
+.product-form-thumb:not(.is-cover):hover {
+  transform: translateY(-2px);
+  border-color: var(--color-text-dim);
+}
+
+.product-form-thumb .admin-image-remove {
+  opacity: 0.85;
+  transition: opacity var(--transition-fast) var(--ease-out), transform var(--transition-fast) var(--ease-out);
+}
+
+.product-form-thumb .admin-image-remove:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.product-form-sale {
+  animation: fade-up 320ms var(--ease-out);
+}
+
+.product-form-sale-preview {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  animation: pop 300ms var(--ease-out);
+}
+
+.product-form-sale-preview strong {
+  color: var(--color-danger);
+}
+
+.product-form-toggle:has(input:checked) {
+  border-color: rgba(var(--color-accent-rgb), 0.5);
+  background: rgba(var(--color-accent-rgb), 0.05);
+}

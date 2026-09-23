@@ -4,7 +4,9 @@ import { supabase } from "../../lib/supabase";
 import { parseCsv, findField } from "../../lib/csv";
 import { formatCurrency } from "../../lib/format";
 import type { Product } from "../../types";
+import { useToast } from "../../context/ToastContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { PlusIcon } from "../../components/Icons";
 import "./adminShared.css";
 
 export default function Products() {
@@ -12,7 +14,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [importing, setImporting] = useState(false);
-  const [importMessage, setImportMessage] = useState<string | null>(null);
+  const toast = useToast();
 
   const load = async () => {
     setLoading(true);
@@ -33,13 +35,17 @@ export default function Products() {
 
   const handleDelete = async (product: Product) => {
     if (!window.confirm(`¿Eliminar "${product.name}"? Esta acción no se puede deshacer.`)) return;
-    await supabase.from("products").delete().eq("id", product.id);
-    load();
+    const { error } = await supabase.from("products").delete().eq("id", product.id);
+    if (error) {
+      toast("No se pudo eliminar el producto", "error");
+      return;
+    }
+    setProducts((prev) => prev.filter((p) => p.id !== product.id));
+    toast(`«${product.name}» eliminado`, "info");
   };
 
   const handleImport = async (file: File) => {
     setImporting(true);
-    setImportMessage(null);
     try {
       const text = await file.text();
       const rows = parseCsv(text);
@@ -86,15 +92,15 @@ export default function Products() {
         .filter((p): p is NonNullable<typeof p> => p !== null);
 
       if (payloads.length === 0) {
-        setImportMessage("No se encontraron filas válidas en el archivo.");
+        toast("No se encontraron filas válidas en el archivo", "error");
       } else {
         const { error } = await supabase.from("products").insert(payloads);
         if (error) throw error;
-        setImportMessage(`Se importaron ${payloads.length} productos.`);
+        toast(`Se importaron ${payloads.length} producto${payloads.length === 1 ? "" : "s"}`, "success");
         load();
       }
     } catch {
-      setImportMessage("No se pudo procesar el archivo CSV.");
+      toast("No se pudo procesar el archivo CSV", "error");
     } finally {
       setImporting(false);
     }
@@ -105,27 +111,32 @@ export default function Products() {
       <div className="admin-page-head">
         <h1 className="admin-page-title">Productos</h1>
         <div className="admin-actions-cell">
-          <label className="btn btn-outline btn-sm">
-            {importing ? "Importando…" : "Importar CSV / Shopify"}
+          <label className={`btn btn-outline btn-sm ${importing ? "btn-loading" : ""}`}>
+            {importing ? "Importando" : "Importar CSV / Shopify"}
             <input
               type="file"
               accept=".csv"
               style={{ display: "none" }}
-              onChange={(e) => e.target.files?.[0] && handleImport(e.target.files[0])}
+              disabled={importing}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleImport(file);
+                e.target.value = "";
+              }}
             />
           </label>
-          <Link to="/admin/productos/nuevo" className="btn btn-primary btn-sm">
-            + Nuevo producto
+          <Link to="/admin/productos/nuevo" className="btn btn-primary btn-sm products-new-btn">
+            <PlusIcon size={16} />
+            Nuevo producto
           </Link>
         </div>
       </div>
 
-      {importMessage && <p className="checkout-coupon-ok">{importMessage}</p>}
-
       <div className="admin-toolbar">
         <input
           className="admin-search-input"
-          placeholder="Buscar por nombre o marca…"
+          type="search"
+          placeholder="Buscar por nombre o marca"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -134,7 +145,9 @@ export default function Products() {
       {loading ? (
         <LoadingSpinner />
       ) : filtered.length === 0 ? (
-        <p className="admin-empty">No hay productos que coincidan.</p>
+        <p className="admin-empty">
+          {products.length === 0 ? "Tu catálogo está vacío. Crea tu primer producto o importa un CSV." : "No hay productos que coincidan."}
+        </p>
       ) : (
         <div className="admin-table-wrap">
           <table className="admin-table">
@@ -152,18 +165,35 @@ export default function Products() {
               {filtered.map((product) => (
                 <tr key={product.id}>
                   <td>
-                    {product.images[0] && (
-                      <img src={product.images[0]} alt="" className="admin-row-thumb" />
+                    {product.images[0] ? (
+                      <img src={product.images[0]} alt="" className="admin-row-thumb" loading="lazy" />
+                    ) : (
+                      <span className="admin-row-thumb admin-row-thumb-empty" />
                     )}
                   </td>
-                  <td>{product.name}</td>
+                  <td>
+                    <Link to={`/admin/productos/${product.id}`} className="products-name">
+                      {product.name}
+                    </Link>
+                    {product.featured && <span className="products-flag">Destacado</span>}
+                    {product.on_sale && product.sale_price != null && <span className="products-flag is-sale">Oferta</span>}
+                  </td>
                   <td>{product.brand}</td>
                   <td>
-                    {product.on_sale && product.sale_price != null
-                      ? formatCurrency(product.sale_price)
-                      : formatCurrency(product.price)}
+                    {product.on_sale && product.sale_price != null ? (
+                      <>
+                        {formatCurrency(product.sale_price)}
+                        <s className="products-old-price">{formatCurrency(product.price)}</s>
+                      </>
+                    ) : (
+                      formatCurrency(product.price)
+                    )}
                   </td>
-                  <td>{product.stock}</td>
+                  <td>
+                    <span className={`admin-stock ${product.stock <= 0 ? "is-out" : product.stock <= 5 ? "is-low" : ""}`}>
+                      {product.stock <= 0 ? "Agotado" : product.stock}
+                    </span>
+                  </td>
                   <td className="admin-actions-cell">
                     <Link to={`/admin/productos/${product.id}`} className="btn btn-outline btn-sm">
                       Editar

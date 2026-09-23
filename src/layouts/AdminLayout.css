@@ -24,10 +24,39 @@
 }
 
 .admin-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--font-display);
   font-size: 1.3rem;
   letter-spacing: 0.06em;
   flex-shrink: 0;
+  transition: color var(--transition-fast) var(--ease-out);
+}
+
+.admin-logo:hover {
+  color: var(--color-accent);
+}
+
+.admin-logo-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  box-shadow: var(--glow-accent-sm);
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+.admin-logo-tag {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-strong);
 }
 
 .admin-quick-access {
@@ -37,6 +66,7 @@
 }
 
 .admin-quick-icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,6 +80,11 @@
 .admin-quick-icon:hover {
   color: var(--color-accent);
   background: rgba(var(--color-accent-rgb), 0.1);
+  transform: translateY(-2px);
+}
+
+.admin-quick-icon:active {
+  transform: scale(0.92);
 }
 
 .admin-quick-icon.active {
@@ -92,12 +127,89 @@
   transition: color var(--transition-fast) var(--ease-out);
 }
 
+.admin-bottom-nav a {
+  position: relative;
+}
+
+.admin-bottom-nav a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 28px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: var(--color-accent);
+  box-shadow: var(--glow-accent-sm);
+  transform: translateX(-50%) scaleX(0);
+  transition: transform var(--transition-base) var(--ease-out);
+}
+
+.admin-bottom-nav a.active::before {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.admin-bottom-nav a svg {
+  transition: transform var(--transition-base) var(--ease-out);
+}
+
+.admin-bottom-nav a.active svg {
+  transform: translateY(-2px);
+}
+
 .admin-bottom-nav a.active,
 .admin-bottom-nav a:hover {
   color: var(--color-accent);
 }
 
+.admin-bottom-icon {
+  position: relative;
+  display: flex;
+}
+
+.admin-nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 17px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--color-bg-elevated);
+  animation: pop 360ms var(--ease-out);
+}
+
+.admin-quick-icon .admin-nav-badge {
+  top: 2px;
+  right: 0;
+}
+
+.admin-page-transition {
+  animation: admin-page-in 380ms var(--ease-out);
+}
+
+@keyframes admin-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (max-width: 720px) {
+  .admin-logo-tag {
+    display: none;
+  }
+
   .admin-quick-access {
     order: 3;
     width: 100%;

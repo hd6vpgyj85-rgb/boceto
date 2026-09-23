@@ -2,6 +2,40 @@
   position: relative;
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+.product-carousel-viewport {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.product-carousel-viewport::before,
+.product-carousel-viewport::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 18px;
+  width: 40px;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity var(--transition-base) var(--ease-out);
+}
+
+.product-carousel-viewport::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--color-bg), transparent);
+}
+
+.product-carousel-viewport::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--color-bg), transparent);
+}
+
+.product-carousel.at-start .product-carousel-viewport::before,
+.product-carousel.at-end .product-carousel-viewport::after {
+  opacity: 0;
 }
 
 .product-carousel-track {
@@ -9,8 +43,9 @@
   gap: 16px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 6px 2px 18px;
+  padding: 10px 2px 18px;
   scrollbar-width: none;
+  overscroll-behavior-x: contain;
 }
 
 .product-carousel-track::-webkit-scrollbar {
@@ -18,39 +53,44 @@
 }
 
 .product-carousel-item {
-  flex: 0 0 200px;
+  flex: 0 0 220px;
   scroll-snap-align: start;
+  animation: fade-up 600ms var(--ease-out) backwards;
 }
 
 .product-carousel-arrow {
   flex-shrink: 0;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-full);
   background: var(--color-bg-card);
   border: 1px solid var(--color-border-strong);
   color: var(--color-text);
-  font-size: 1.6rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
+  z-index: 3;
   transition:
     border-color var(--transition-fast) var(--ease-out),
-    box-shadow var(--transition-fast) var(--ease-out);
+    box-shadow var(--transition-base) var(--ease-out),
+    color var(--transition-fast) var(--ease-out),
+    opacity var(--transition-base) var(--ease-out),
+    transform var(--transition-fast) var(--ease-out);
 }
 
-.product-carousel-arrow:hover {
+.product-carousel-arrow:hover:not(:disabled) {
   border-color: var(--color-accent);
+  color: var(--color-accent);
   box-shadow: var(--glow-accent-sm);
 }
 
-.product-carousel-arrow-left {
-  margin-right: 10px;
+.product-carousel-arrow:active:not(:disabled) {
+  transform: scale(0.9);
 }
 
-.product-carousel-arrow-right {
-  margin-left: 10px;
+.product-carousel-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 
 @media (max-width: 640px) {

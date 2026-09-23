@@ -59,33 +59,25 @@ tocar código para eso**.
       ve — sin este paso el sitio publicado no va a conectar con tu base de
       datos.
 
-## 4. Categorías (cantidad fija en código) y niveles (100% desde el admin)
+## 4. Categorías y niveles (100% desde el admin)
 
-- [ ] **☐ [MODIFICAR MANUAL] — `src/config/catalog.ts`**. El *nombre*,
-      *imagen* y *tagline* de cada categoría ya se editan desde `/admin` sin
-      tocar código. Pero la **cantidad** de categorías y sus slugs internos
-      están fijados aquí y en las rutas de `src/App.tsx` (necesario porque
-      cada categoría tiene su propia página en `/[categoria]`). Si vas a usar
-      las 3 categorías de ejemplo, no necesitas tocar nada. Si vas a agregar,
-      quitar o renombrar el *slug* de una categoría:
-      1. Edita `CATEGORY_SLUGS` en este archivo.
-      2. Inserta la fila correspondiente en la tabla `categories` de
-         Supabase con ese mismo slug (o hazlo desde el Table Editor).
-      3. Las rutas de categoría se generan automáticamente desde
-         `CATEGORY_SLUGS` en `src/App.tsx`, así que no hace falta tocar el
-         router.
-- [ ] Los **niveles** (tabla `levels`) no tienen esta restricción: se pueden
-      crear, renombrar y eliminar libremente desde `/admin` → "Contenido de
-      inicio" → sección "Elige tu nivel", sin tocar código. El filtro de
-      niveles del catálogo y del buscador se actualiza automáticamente.
+- [ ] Las **categorías** se crean, renombran y eliminan desde
+      `/admin/categorias`. Cada una tiene su propia página en `/[slug]`
+      automáticamente (por ejemplo `/novedades`), sin tocar el router.
+- [ ] Los **niveles** (tabla `levels`) se crean, renombran y eliminan desde
+      `/admin` → "Contenido de inicio" → sección "Elige tu nivel". El filtro
+      de niveles del catálogo y del buscador se actualiza automáticamente.
 
 ## 5. Identidad visual
+
+- [ ] **☐ [MODIFICAR MANUAL] — `wrangler.toml`**, campo `name`. Debe
+      coincidir con el nombre del Worker que creaste en Cloudflare.
 
 - [ ] **☐ [MODIFICAR MANUAL] — `src/styles/theme.css`**, variable
       `--color-accent` (y `--color-accent-rgb`, `--color-accent-light`,
       `--color-accent-dark`). Es el único lugar donde vive el color de marca
       — no es editable desde el admin a propósito, para no complicar el
-      build. Cámbialo si el comprador no quiere el neón naranja de ejemplo.
+      build. Cámbialo si el comprador no quiere el azul neón de ejemplo.
 - [ ] **☐ [MODIFICAR MANUAL] — `public/favicon.svg`** y
       **`index.html`** (`<title>`, meta `description`, Open Graph
       title/description/image, favicon). Estos valores son SEO estático: se
@@ -107,14 +99,15 @@ tocar código para eso**.
 Todo esto se hace **desde `/admin`**, sin tocar código:
 
 - [ ] **Configuración del negocio** (ícono de engranaje en el header del
-      admin, o `/admin/configuracion`): nombre, tagline, logo, WhatsApp,
-      teléfono, correo, dirección, ciudad, horario, redes sociales, foto del
-      local y nota del pie de página.
-- [ ] **Categorías** (`/admin/categorias`): nombre, tagline e imagen de
-      banner de cada una.
+      admin, o `/admin/configuracion`): nombre, tagline, logo, título de la
+      portada, barra de anuncios, moneda, WhatsApp, teléfono, correo,
+      dirección, ciudad, horario, redes sociales, foto del local y nota del
+      pie de página.
+- [ ] **Categorías** (`/admin/categorias`): crea, edita o elimina
+      categorías (nombre, tagline e imagen de banner).
 - [ ] **Contenido de inicio** (`/admin/contenido-inicio`): imágenes del
       banner promocional y foto/etiqueta de cada nivel.
-- [ ] **Productos** (`/admin/productos`): borra los 19 productos de ejemplo
+- [ ] **Productos** (`/admin/productos`): borra los 16 productos de ejemplo
       y carga los reales (uno por uno o por CSV/Shopify).
 - [ ] **Clientes → Niveles de fidelidad** (`/admin/clientes`, al final de la
       página): ajusta los 3 niveles de recompensas de ejemplo.
@@ -134,7 +127,15 @@ Todo esto se hace **desde `/admin`**, sin tocar código:
 - [ ] Despliega. Cada push a la rama configurada vuelve a construir el sitio
       automáticamente.
 
-## 9. Verificación final
+## 9. Actualizar una copia existente
+
+- [ ] Si ya tenías una versión anterior de la plantilla desplegada, vuelve a
+      correr **todo** `supabase/schema.sql` en el SQL Editor después de
+      actualizar el código. Agrega las columnas nuevas (`hero_title`,
+      `announcement`, `currency`) sin tocar tus datos y reemplaza el
+      contenido de demostración antiguo solo si nunca lo modificaste.
+
+## 10. Verificación final
 
 - [ ] Entra a `/admin/login` con el usuario del paso 2 y confirma acceso al
       panel.

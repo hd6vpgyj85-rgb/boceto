@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Review } from "../types";
-import ReviewCard from "./ReviewCard";
+import ReviewCard, { VerifiedBadge } from "./ReviewCard";
 import StarRating from "./StarRating";
 import Lightbox from "./Lightbox";
 import "./ReviewsShowcase.css";
@@ -58,24 +58,26 @@ export default function ReviewsShowcase({ reviews }: ReviewsShowcaseProps) {
           className="reviews-mobile-track"
           style={{ transform: `translateX(-${mobileIndex * 100}%)` }}
         >
-          {reviews.map((review) => (
-            <div className="reviews-mobile-slide" key={review.id}>
+          {reviews.map((review, i) => (
+            <div className={`reviews-mobile-slide ${i === mobileIndex ? "is-active" : ""}`} key={review.id}>
               <button
                 type="button"
                 className="reviews-mobile-avatar-btn"
                 onClick={() => review.image_url && setLightboxImage(review.image_url)}
+                aria-label={`Ver foto de ${review.name}`}
               >
                 {review.image_url ? (
-                  <img src={review.image_url} alt={review.name} className="reviews-mobile-avatar" />
+                  <img src={review.image_url} alt={review.name} className="reviews-mobile-avatar" loading="lazy" />
                 ) : (
                   <span className="reviews-mobile-avatar reviews-mobile-avatar-fallback">
                     {review.name[0]}
                   </span>
                 )}
               </button>
-              <StarRating rating={review.rating} size={18} />
+              <StarRating key={i === mobileIndex ? "on" : "off"} rating={review.rating} size={18} animated={i === mobileIndex} />
               <p className="reviews-mobile-quote">&ldquo;{review.quote}&rdquo;</p>
               <span className="reviews-mobile-name">{review.name}</span>
+              <VerifiedBadge />
             </div>
           ))}
         </div>
