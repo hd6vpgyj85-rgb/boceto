@@ -85,3 +85,36 @@
   font-size: 0.82rem;
   text-align: center;
 }
+
+.level-editor-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.level-editor-circle-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-dim);
+  border-style: dashed;
+}
+
+.level-editor-add {
+  width: 110px;
+  height: 110px;
+  border-radius: var(--radius-full);
+  border: 2px dashed var(--color-border-strong);
+  color: var(--color-text-dim);
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  transition: all var(--transition-fast) var(--ease-out);
+}
+
+.level-editor-add:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  box-shadow: var(--glow-accent-sm);
+}

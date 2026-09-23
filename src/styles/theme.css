@@ -4,10 +4,10 @@
      CSS para no complicar el build). Cambia --color-accent y --color-accent-rgb
      (y opcionalmente light/dark) para rebrandear toda la tienda a otro color.
      ========================================================================== */
-  --color-accent: #ff5a1f;
-  --color-accent-rgb: 255, 90, 31;
-  --color-accent-light: #ff8a52;
-  --color-accent-dark: #d9440f;
+  --color-accent: #00d9ff;
+  --color-accent-rgb: 0, 217, 255;
+  --color-accent-light: #6ceaff;
+  --color-accent-dark: #00a3c4;
 
   /* Fondo y superficies (tema oscuro) */
   --color-bg: #0a0a0c;
