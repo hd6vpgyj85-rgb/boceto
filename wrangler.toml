@@ -1,0 +1,7 @@
+name = "noire-perfumeria"
+compatibility_date = "2024-12-01"
+
+# Despliegue como sitio estático (Workers Static Assets) para la SPA generada por Vite.
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"

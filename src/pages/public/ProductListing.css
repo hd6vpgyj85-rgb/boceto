@@ -1,0 +1,33 @@
+.listing-hero {
+  position: relative;
+  padding: 60px 0;
+  background: var(--color-bg-elevated);
+}
+
+.listing-hero-photo {
+  padding: 120px 0 60px;
+  background-size: cover;
+  background-position: center;
+}
+
+.listing-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 6, 7, 0.55) 0%, rgba(6, 6, 7, 0.85) 100%);
+}
+
+.listing-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.listing-title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  text-transform: uppercase;
+}
+
+.listing-subtitle {
+  color: var(--color-text-muted);
+  margin-top: 8px;
+  max-width: 60ch;
+}

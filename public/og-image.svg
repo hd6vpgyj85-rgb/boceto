@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0c"/>
+      <stop offset="100%" stop-color="#1a1210"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="600" y="330" font-family="Georgia, serif" font-size="110" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="14">NOIRE</text>
+  <text x="600" y="390" font-family="Georgia, serif" font-size="32" fill="#ff5a1f" text-anchor="middle" letter-spacing="6">PERFUMERÍA</text>
+</svg>

@@ -1,0 +1,60 @@
+:root {
+  /* ==========================================================================
+     [MODIFICAR MANUAL] Color de marca: no es editable desde el admin (vive en
+     CSS para no complicar el build). Cambia --color-accent y --color-accent-rgb
+     (y opcionalmente light/dark) para rebrandear toda la tienda a otro color.
+     ========================================================================== */
+  --color-accent: #ff5a1f;
+  --color-accent-rgb: 255, 90, 31;
+  --color-accent-light: #ff8a52;
+  --color-accent-dark: #d9440f;
+
+  /* Fondo y superficies (tema oscuro) */
+  --color-bg: #0a0a0c;
+  --color-bg-elevated: #131316;
+  --color-bg-card: #18181c;
+  --color-bg-card-hover: #1f1f24;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Texto */
+  --color-text: #f5f4f0;
+  --color-text-muted: #a8a6ad;
+  --color-text-dim: #6d6b74;
+  --color-text-on-accent: #0a0a0c;
+
+  /* Estados */
+  --color-success: #35d68a;
+  --color-danger: #ff5470;
+  --color-star: #ffb84d;
+
+  /* Efecto neón: usar SIEMPRE rgba con el acento, nunca sólido, para que
+     se vea como brillo y no tape el fondo. */
+  --glow-accent-sm: 0 0 16px rgba(var(--color-accent-rgb), 0.25);
+  --glow-accent-md: 0 0 28px rgba(var(--color-accent-rgb), 0.35);
+  --glow-accent-lg: 0 0 48px rgba(var(--color-accent-rgb), 0.4);
+  --glow-accent-text: 0 0 18px rgba(var(--color-accent-rgb), 0.5);
+
+  /* Tipografía */
+  --font-display: "Bebas Neue", "Oswald", "Arial Narrow", sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Radios */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  /* Espaciado de layout */
+  --container-max: 1280px;
+  --header-height: 72px;
+
+  /* Animación */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --transition-fast: 150ms;
+  --transition-base: 280ms;
+  --transition-slow: 500ms;
+
+  color-scheme: dark;
+}

@@ -1,0 +1,64 @@
+.product-carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.product-carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 6px 2px 18px;
+  scrollbar-width: none;
+}
+
+.product-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.product-carousel-item {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+}
+
+.product-carousel-arrow {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition:
+    border-color var(--transition-fast) var(--ease-out),
+    box-shadow var(--transition-fast) var(--ease-out);
+}
+
+.product-carousel-arrow:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--glow-accent-sm);
+}
+
+.product-carousel-arrow-left {
+  margin-right: 10px;
+}
+
+.product-carousel-arrow-right {
+  margin-left: 10px;
+}
+
+@media (max-width: 640px) {
+  .product-carousel-arrow {
+    display: none;
+  }
+
+  .product-carousel-item {
+    flex-basis: 46%;
+  }
+}
