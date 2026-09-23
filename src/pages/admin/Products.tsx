@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { parseCsv, findField } from "../../lib/csv";
 import { formatCurrency } from "../../lib/format";
 import type { Product } from "../../types";
-import ProductForm from "./ProductForm";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import "./adminShared.css";
 
@@ -11,7 +11,6 @@ export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [editing, setEditing] = useState<Product | null | "new">(null);
   const [importing, setImporting] = useState(false);
   const [importMessage, setImportMessage] = useState<string | null>(null);
 
@@ -115,9 +114,9 @@ export default function Products() {
               onChange={(e) => e.target.files?.[0] && handleImport(e.target.files[0])}
             />
           </label>
-          <button type="button" className="btn btn-primary btn-sm" onClick={() => setEditing("new")}>
+          <Link to="/admin/productos/nuevo" className="btn btn-primary btn-sm">
             + Nuevo producto
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -166,9 +165,9 @@ export default function Products() {
                   </td>
                   <td>{product.stock}</td>
                   <td className="admin-actions-cell">
-                    <button type="button" className="btn btn-outline btn-sm" onClick={() => setEditing(product)}>
+                    <Link to={`/admin/productos/${product.id}`} className="btn btn-outline btn-sm">
                       Editar
-                    </button>
+                    </Link>
                     <button type="button" className="btn btn-danger btn-sm" onClick={() => handleDelete(product)}>
                       Eliminar
                     </button>
@@ -178,17 +177,6 @@ export default function Products() {
             </tbody>
           </table>
         </div>
-      )}
-
-      {editing && (
-        <ProductForm
-          product={editing === "new" ? null : editing}
-          onClose={() => setEditing(null)}
-          onSaved={() => {
-            setEditing(null);
-            load();
-          }}
-        />
       )}
     </div>
   );

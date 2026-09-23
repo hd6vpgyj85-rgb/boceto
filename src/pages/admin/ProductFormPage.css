@@ -1,0 +1,120 @@
+.product-form-page {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.product-form-back {
+  display: inline-block;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.product-form-back:hover {
+  color: var(--color-accent);
+}
+
+.product-form-page .admin-page-title {
+  margin-bottom: 22px;
+}
+
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.product-form-section {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.product-form-section h2 {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-dim);
+}
+
+.product-form-thumb {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 2px solid var(--color-border-strong);
+}
+
+.product-form-thumb.is-cover {
+  border-color: var(--color-accent);
+  box-shadow: var(--glow-accent-sm);
+}
+
+.product-form-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.product-form-cover-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(var(--color-accent-rgb), 0.9);
+  color: var(--color-text-on-accent);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+  padding: 2px 0;
+}
+
+.product-form-hint {
+  font-size: 0.76rem;
+  color: var(--color-text-dim);
+  margin-top: -6px;
+}
+
+.product-form-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--transition-fast) var(--ease-out);
+}
+
+.product-form-toggle:hover {
+  border-color: var(--color-border-strong);
+}
+
+.product-form-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent);
+}
+
+.product-form-submit,
+.product-form-delete {
+  padding: 16px;
+  font-size: 1rem;
+}
+
+.product-form-delete {
+  margin-top: -6px;
+}

@@ -93,7 +93,6 @@ export type ReviewStatus = "pending" | "approved" | "rejected";
 export interface Review {
   id: string;
   name: string;
-  level: string | null;
   rating: number;
   quote: string;
   image_url: string | null;
