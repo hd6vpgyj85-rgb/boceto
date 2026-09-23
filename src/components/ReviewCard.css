@@ -1,13 +1,33 @@
 .review-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
-  gap: 14px;
-  padding: 18px;
+  gap: 16px;
+  padding: 20px;
   align-items: flex-start;
 }
 
 .review-card:hover {
   border-color: rgba(var(--color-accent-rgb), 0.35);
   box-shadow: var(--glow-accent-sm);
+  transform: translateY(-3px);
+}
+
+.review-card-quote-mark {
+  position: absolute;
+  top: -14px;
+  right: 14px;
+  font-family: Georgia, serif;
+  font-size: 6rem;
+  line-height: 1;
+  color: rgba(var(--color-accent-rgb), 0.1);
+  pointer-events: none;
+  transition: color var(--transition-base) var(--ease-out), transform var(--transition-slow) var(--ease-out);
+}
+
+.review-card:hover .review-card-quote-mark {
+  color: rgba(var(--color-accent-rgb), 0.22);
+  transform: translateY(4px) rotate(-6deg);
 }
 
 .review-card-avatar-btn {
@@ -23,12 +43,14 @@
   border: 2px solid var(--color-border-strong);
   transition:
     border-color var(--transition-fast) var(--ease-out),
-    transform var(--transition-fast) var(--ease-out);
+    transform var(--transition-base) var(--ease-out),
+    box-shadow var(--transition-base) var(--ease-out);
 }
 
 .review-card-avatar-btn:hover .review-card-avatar {
   border-color: var(--color-accent);
-  transform: scale(1.06);
+  box-shadow: var(--glow-accent-sm);
+  transform: scale(1.08);
 }
 
 .review-card-avatar-fallback {
@@ -42,6 +64,7 @@
 }
 
 .review-card-body {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -49,13 +72,32 @@
 }
 
 .review-card-quote {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   color: var(--color-text-muted);
-  line-height: 1.5;
+  line-height: 1.6;
+}
+
+.review-card-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .review-card-name {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 600;
   color: var(--color-text);
+}
+
+.review-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-success);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(53, 214, 138, 0.1);
 }

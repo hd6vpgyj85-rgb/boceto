@@ -1,4 +1,6 @@
-import { Navigate, NavLink, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate, NavLink, Outlet, useLocation } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
 import { useSiteSettings } from "../hooks/useSiteData";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -7,6 +9,29 @@ import "./AdminLayout.css";
 export default function AdminLayout() {
   const { session, loading, signOut } = useAuth();
   const { settings } = useSiteSettings();
+  const { pathname } = useLocation();
+  const [pendingOrders, setPendingOrders] = useState(0);
+  const [pendingReviews, setPendingReviews] = useState(0);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!session) return;
+    Promise.all([
+      supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "pending").is("archived_at", null),
+      supabase.from("reviews").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    ]).then(([orders, reviews]) => {
+      setPendingOrders(orders.count ?? 0);
+      setPendingReviews(reviews.count ?? 0);
+    });
+  }, [session, pathname]);
+
+  useEffect(() => {
+    const name = settings?.business_name;
+    document.title = name ? `Panel · ${name}` : "Panel de administración";
+  }, [settings?.business_name, pathname]);
 
   if (loading) return <LoadingSpinner />;
   if (!session) return <Navigate to="/admin/login" replace />;
@@ -16,7 +41,9 @@ export default function AdminLayout() {
       <header className="admin-header">
         <div className="admin-header-inner">
           <NavLink to="/admin" end className="admin-logo">
+            <span className="admin-logo-dot" />
             {settings?.business_name ?? "Admin"}
+            <span className="admin-logo-tag">Panel</span>
           </NavLink>
 
           <div className="admin-quick-access">
@@ -25,6 +52,7 @@ export default function AdminLayout() {
             </NavLink>
             <NavLink to="/admin/resenas" className="admin-quick-icon" title="Reseñas">
               <StarIcon />
+              {pendingReviews > 0 && <span className="admin-nav-badge">{pendingReviews > 9 ? "9+" : pendingReviews}</span>}
             </NavLink>
             <NavLink to="/admin/cupones" className="admin-quick-icon" title="Cupones">
               <TagIcon />
@@ -38,7 +66,7 @@ export default function AdminLayout() {
           </div>
 
           <div className="admin-header-actions">
-            <a href="/" target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
+            <a href="/" target="_blank" rel="noreferrer" className="btn btn-outline btn-sm admin-view-site">
               Ver sitio
             </a>
             <button type="button" className="btn btn-ghost btn-sm" onClick={signOut}>
@@ -49,7 +77,9 @@ export default function AdminLayout() {
       </header>
 
       <main className="admin-content">
-        <Outlet />
+        <div className="admin-page-transition" key={pathname}>
+          <Outlet />
+        </div>
       </main>
 
       <nav className="admin-bottom-nav">
@@ -66,7 +96,10 @@ export default function AdminLayout() {
           <span>Categorías</span>
         </NavLink>
         <NavLink to="/admin/pedidos">
-          <ClipboardIcon />
+          <span className="admin-bottom-icon">
+            <ClipboardIcon />
+            {pendingOrders > 0 && <span className="admin-nav-badge">{pendingOrders > 9 ? "9+" : pendingOrders}</span>}
+          </span>
           <span>Pedidos</span>
         </NavLink>
       </nav>

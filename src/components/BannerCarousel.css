@@ -3,7 +3,7 @@
   width: 100%;
 }
 
-/* ---------- Escritorio: coverflow a todo el ancho ---------- */
+/* ---------- Escritorio: coverflow ---------- */
 
 .banner-desktop {
   display: none;
@@ -21,11 +21,13 @@
   border-radius: var(--radius-lg);
   background-size: cover;
   background-position: center;
+  background-color: var(--color-bg-card);
   border: 1px solid var(--color-border);
   transition:
-    transform var(--transition-slow) var(--ease-out),
-    opacity var(--transition-slow) var(--ease-out),
-    box-shadow var(--transition-slow) var(--ease-out);
+    transform 800ms var(--ease-out),
+    opacity 800ms var(--ease-out),
+    box-shadow 800ms var(--ease-out),
+    filter 800ms var(--ease-out);
   cursor: pointer;
 }
 
@@ -33,19 +35,30 @@
   transform: translateX(0) scale(1);
   z-index: 3;
   opacity: 1;
-  box-shadow: var(--glow-accent-md);
+  cursor: default;
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.5),
+    var(--glow-accent-md);
 }
 
 .banner-slide[data-diff="-1"] {
-  transform: translateX(-62%) scale(0.82);
+  transform: translateX(-62%) scale(0.82) perspective(1200px) rotateY(12deg);
   z-index: 2;
-  opacity: 0.55;
+  opacity: 0.5;
+  filter: saturate(0.6);
 }
 
 .banner-slide[data-diff="1"] {
-  transform: translateX(62%) scale(0.82);
+  transform: translateX(62%) scale(0.82) perspective(1200px) rotateY(-12deg);
   z-index: 2;
-  opacity: 0.55;
+  opacity: 0.5;
+  filter: saturate(0.6);
+}
+
+.banner-slide[data-diff="-1"]:hover,
+.banner-slide[data-diff="1"]:hover {
+  opacity: 0.75;
+  filter: none;
 }
 
 .banner-slide[data-diff="hidden"] {
@@ -59,21 +72,26 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 4;
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: var(--radius-full);
   background: rgba(10, 10, 12, 0.6);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--color-border-strong);
   color: var(--color-text);
-  font-size: 1.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast) var(--ease-out);
+  transition:
+    border-color var(--transition-fast) var(--ease-out),
+    box-shadow var(--transition-base) var(--ease-out),
+    color var(--transition-fast) var(--ease-out),
+    transform var(--transition-base) var(--ease-out);
 }
 
 .banner-arrow:hover {
   border-color: var(--color-accent);
+  color: var(--color-accent);
   box-shadow: var(--glow-accent-sm);
 }
 
@@ -81,25 +99,34 @@
   left: 24px;
 }
 
+.banner-arrow-left:hover {
+  transform: translateY(-50%) translateX(-3px);
+}
+
 .banner-arrow-right {
   right: 24px;
 }
 
-/* ---------- Móvil: una imagen a pantalla completa ---------- */
+.banner-arrow-right:hover {
+  transform: translateY(-50%) translateX(3px);
+}
+
+/* ---------- Móvil: una imagen a la vez ---------- */
 
 .banner-mobile {
   display: block;
   width: 100%;
-  height: 62vh;
-  min-height: 340px;
-  max-height: 560px;
+  height: 56vh;
+  min-height: 320px;
+  max-height: 540px;
   overflow: hidden;
+  border-radius: var(--radius-lg);
 }
 
 .banner-mobile-track {
   display: flex;
   height: 100%;
-  transition: transform var(--transition-slow) var(--ease-out);
+  transition: transform 700ms var(--ease-out);
 }
 
 .banner-mobile-slide {
@@ -107,6 +134,13 @@
   height: 100%;
   background-size: cover;
   background-position: center;
+  background-color: var(--color-bg-card);
+  transform: scale(1.06);
+  transition: transform 8s linear;
+}
+
+.banner-mobile-slide.is-active {
+  transform: scale(1);
 }
 
 .banner-dots {
@@ -117,20 +151,55 @@
   z-index: 4;
   display: flex;
   gap: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(10, 10, 12, 0.45);
+  backdrop-filter: blur(6px);
 }
 
 .banner-dot {
+  position: relative;
+  overflow: hidden;
   width: 8px;
   height: 8px;
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.35);
-  transition: all var(--transition-fast) var(--ease-out);
+  transition:
+    width var(--transition-base) var(--ease-out),
+    background var(--transition-base) var(--ease-out);
+}
+
+.banner-dot:hover {
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .banner-dot-active {
+  width: 30px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.banner-dot-fill {
+  position: absolute;
+  inset: 0;
   background: var(--color-accent);
   box-shadow: var(--glow-accent-sm);
-  width: 22px;
+  transform-origin: left;
+  animation-name: banner-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.banner.is-paused .banner-dot-fill {
+  animation-play-state: paused;
+}
+
+@keyframes banner-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
 @media (min-width: 861px) {

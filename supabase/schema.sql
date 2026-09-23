@@ -1,5 +1,5 @@
 -- ============================================================================
--- NOIRE Perfumería — schema.sql
+-- Boceto — schema.sql
 -- Plantilla de tienda en línea. Este script es idempotente: se puede correr
 -- las veces que hagan falta sobre el mismo proyecto de Supabase sin romper
 -- datos existentes ni duplicar contenido de ejemplo.
@@ -31,11 +31,17 @@ create table if not exists site_settings (
   map_url text,
   footer_note text not null default '',
   store_photo_url text,
+  hero_title text not null default 'Todo lo que buscas, en un solo lugar',
+  announcement text not null default 'Envíos a todo el país · Pago seguro · Atención personalizada por WhatsApp',
+  currency text not null default 'MXN',
   updated_at timestamptz not null default now()
 );
 alter table site_settings add column if not exists store_photo_url text;
+alter table site_settings add column if not exists hero_title text not null default 'Todo lo que buscas, en un solo lugar';
+alter table site_settings add column if not exists announcement text not null default 'Envíos a todo el país · Pago seguro · Atención personalizada por WhatsApp';
+alter table site_settings add column if not exists currency text not null default 'MXN';
 
--- levels: niveles/colecciones (slug fijo en código, resto editable).
+-- levels: niveles/colecciones (todo editable desde el admin).
 create table if not exists levels (
   slug text primary key,
   label text not null,
@@ -44,7 +50,7 @@ create table if not exists levels (
   display_order int not null default 0
 );
 
--- categories: categorías de producto (slug fijo en código, resto editable).
+-- categories: categorías de producto (todo editable desde el admin).
 create table if not exists categories (
   slug text primary key,
   name text not null,
@@ -567,50 +573,125 @@ create policy "product_images_public_review_upload" on storage.objects
   with check (bucket_id = 'product-images' and (storage.foldername(name))[1] = 'reviews');
 
 -- ============================================================================
--- 6. DATOS DE EJEMPLO (solo se insertan si las tablas están vacías)
+-- 6. MIGRACIÓN DEL CONTENIDO DE EJEMPLO ANTERIOR
+-- Versiones previas de esta plantilla traían una demo de perfumería. Estos
+-- bloques la reemplazan por la demo genérica de tienda, pero SOLO donde el
+-- contenido sigue intacto: nada que hayas editado desde el admin se toca.
 -- ============================================================================
 
-insert into site_settings (id, business_name, tagline, logo_url, whatsapp, phone, email, address, city, hours, instagram_url, facebook_url, tiktok_url, map_url, footer_note, store_photo_url)
+update site_settings set
+  business_name = 'Boceto',
+  tagline = 'Tu tienda en línea, lista para vender desde el primer día',
+  whatsapp = '525512345678',
+  phone = '+52 55 1234 5678',
+  email = 'hola@boceto.shop',
+  address = 'Av. Reforma 222, Col. Juárez',
+  city = 'Ciudad de México, México',
+  instagram_url = 'https://instagram.com/boceto.shop',
+  facebook_url = 'https://facebook.com/boceto.shop',
+  tiktok_url = 'https://tiktok.com/@boceto.shop',
+  map_url = 'https://maps.google.com/?q=Av.+Reforma+222+Ciudad+de+Mexico',
+  footer_note = 'Hecho con cariño para que vendas más. © 2026 Boceto.'
+where business_name = 'NOIRE Perfumería';
+
+do $$
+begin
+  if exists (select 1 from categories where slug = 'perfumes') and not exists (select 1 from categories where slug = 'coleccion') then
+    update categories set slug = 'coleccion' where slug = 'perfumes';
+  end if;
+  if exists (select 1 from categories where slug = 'splash-corporal') and not exists (select 1 from categories where slug = 'novedades') then
+    update categories set slug = 'novedades' where slug = 'splash-corporal';
+  end if;
+  if exists (select 1 from categories where slug = 'difusores') and not exists (select 1 from categories where slug = 'esenciales') then
+    update categories set slug = 'esenciales' where slug = 'difusores';
+  end if;
+
+  if exists (select 1 from levels where slug = 'arabe') and not exists (select 1 from levels where slug = 'basico') then
+    update levels set slug = 'basico' where slug = 'arabe';
+    update products set levels = array_replace(levels, 'arabe', 'basico');
+  end if;
+  if exists (select 1 from levels where slug = 'disenador') and not exists (select 1 from levels where slug = 'premium') then
+    update levels set slug = 'premium' where slug = 'disenador';
+    update products set levels = array_replace(levels, 'disenador', 'premium');
+  end if;
+  if exists (select 1 from levels where slug = 'nicho') and not exists (select 1 from levels where slug = 'exclusivo') then
+    update levels set slug = 'exclusivo' where slug = 'nicho';
+    update products set levels = array_replace(levels, 'nicho', 'exclusivo');
+  end if;
+end $$;
+
+update categories set name = 'Colección', tagline = 'Nuestros productos de siempre, elegidos con cuidado'
+where slug = 'coleccion' and name = 'Perfumes';
+update categories set name = 'Novedades', tagline = 'Lo último que llegó a la tienda'
+where slug = 'novedades' and name = 'Splash Corporal';
+update categories set name = 'Esenciales', tagline = 'Básicos que nunca fallan'
+where slug = 'esenciales' and name = 'Difusores de Hogar';
+
+update levels set label = 'Básico', tagline = 'Lo esencial, a buen precio'
+where slug = 'basico' and label = 'Esencias Árabes';
+update levels set label = 'Premium', tagline = 'Calidad superior para el día a día'
+where slug = 'premium' and label = 'Inspirados Diseñador';
+update levels set label = 'Exclusivo', tagline = 'Ediciones limitadas y piezas únicas'
+where slug = 'exclusivo' and label = 'Alta Perfumería Nicho';
+
+update loyalty_tiers set reward_description = '10% de descuento en tu próximo producto'
+where reward_description = '10% de descuento en tu próxima fragancia';
+update loyalty_tiers set reward_description = 'Regalo sorpresa + 30% en toda tu compra'
+where reward_description = 'Fragancia de regalo sorpresa + 30% en toda tu compra';
+
+-- Productos y reseñas de la demo anterior: se identifican por sus fotos de
+-- ejemplo. Si ya reemplazaste la foto, el registro se considera tuyo y se queda.
+delete from products where images[1] like 'https://picsum.photos/seed/noire-p%';
+delete from reviews where image_url like 'https://picsum.photos/seed/noire-review-%';
+
+-- ============================================================================
+-- 7. DATOS DE EJEMPLO (solo se insertan si las tablas están vacías)
+-- ============================================================================
+
+insert into site_settings (id, business_name, tagline, logo_url, whatsapp, phone, email, address, city, hours, instagram_url, facebook_url, tiktok_url, map_url, footer_note, store_photo_url, hero_title, announcement, currency)
 select
   true,
-  'NOIRE Perfumería',
-  'Perfumería de autor en el corazón de Medellín',
+  'Boceto',
+  'Tu tienda en línea, lista para vender desde el primer día',
   null,
-  '573004567890',
-  '+57 300 456 7890',
-  'hola@noireperfumeria.com',
-  'Cra. 43A #10-25, El Poblado',
-  'Medellín, Colombia',
+  '525512345678',
+  '+52 55 1234 5678',
+  'hola@boceto.shop',
+  'Av. Reforma 222, Col. Juárez',
+  'Ciudad de México, México',
   E'Lunes a viernes: 10:00 a. m. – 8:00 p. m.\nSábados: 10:00 a. m. – 6:00 p. m.\nDomingos: 12:00 p. m. – 5:00 p. m.',
-  'https://instagram.com/noire.perfumeria',
-  'https://facebook.com/noireperfumeria',
-  'https://tiktok.com/@noire.perfumeria',
-  'https://maps.google.com/?q=Cra+43A+%2310-25+El+Poblado+Medellin',
-  'Hecho con pasión por el arte de perfumar. © 2025 NOIRE Perfumería.',
-  'https://picsum.photos/seed/noire-store/1600/900'
+  'https://instagram.com/boceto.shop',
+  'https://facebook.com/boceto.shop',
+  'https://tiktok.com/@boceto.shop',
+  'https://maps.google.com/?q=Av.+Reforma+222+Ciudad+de+Mexico',
+  'Hecho con cariño para que vendas más. © 2026 Boceto.',
+  'https://picsum.photos/seed/boceto-store/1600/900',
+  'Todo lo que buscas, en un solo lugar',
+  'Envíos a todo el país · Pago seguro · Atención personalizada por WhatsApp',
+  'MXN'
 where not exists (select 1 from site_settings);
 
 insert into levels (slug, label, image_url, tagline, display_order)
 select * from (values
-  ('arabe', 'Esencias Árabes', 'https://picsum.photos/seed/noire-level-arabe/500/500', 'Attars y oils de larga duración', 1),
-  ('disenador', 'Inspirados Diseñador', 'https://picsum.photos/seed/noire-level-disenador/500/500', 'Los aromas icónicos, reinventados', 2),
-  ('nicho', 'Alta Perfumería Nicho', 'https://picsum.photos/seed/noire-level-nicho/500/500', 'Ediciones exclusivas y raras', 3)
+  ('basico', 'Básico', 'https://picsum.photos/seed/boceto-level-1/500/500', 'Lo esencial, a buen precio', 1),
+  ('premium', 'Premium', 'https://picsum.photos/seed/boceto-level-2/500/500', 'Calidad superior para el día a día', 2),
+  ('exclusivo', 'Exclusivo', 'https://picsum.photos/seed/boceto-level-3/500/500', 'Ediciones limitadas y piezas únicas', 3)
 ) as v(slug, label, image_url, tagline, display_order)
 where not exists (select 1 from levels);
 
 insert into categories (slug, name, tagline, banner_image_url, display_order)
 select * from (values
-  ('perfumes', 'Perfumes', 'Fragancias de larga duración para cada ocasión', 'https://picsum.photos/seed/noire-cat-perfumes/1600/500', 1),
-  ('splash-corporal', 'Splash Corporal', 'Hidratación perfumada para el día a día', 'https://picsum.photos/seed/noire-cat-splash/1600/500', 2),
-  ('difusores', 'Difusores de Hogar', 'Aromatiza tus espacios favoritos', 'https://picsum.photos/seed/noire-cat-difusores/1600/500', 3)
+  ('coleccion', 'Colección', 'Nuestros productos de siempre, elegidos con cuidado', 'https://picsum.photos/seed/boceto-cat-1/1600/500', 1),
+  ('novedades', 'Novedades', 'Lo último que llegó a la tienda', 'https://picsum.photos/seed/boceto-cat-2/1600/500', 2),
+  ('esenciales', 'Esenciales', 'Básicos que nunca fallan', 'https://picsum.photos/seed/boceto-cat-3/1600/500', 3)
 ) as v(slug, name, tagline, banner_image_url, display_order)
 where not exists (select 1 from categories);
 
 insert into home_banner (id, images)
 select true, array[
-  'https://picsum.photos/seed/noire-banner-1/1600/700',
-  'https://picsum.photos/seed/noire-banner-2/1600/700',
-  'https://picsum.photos/seed/noire-banner-3/1600/700'
+  'https://picsum.photos/seed/boceto-banner-1/1600/700',
+  'https://picsum.photos/seed/boceto-banner-2/1600/700',
+  'https://picsum.photos/seed/boceto-banner-3/1600/700'
 ]
 where not exists (select 1 from home_banner);
 
@@ -620,44 +701,41 @@ where not exists (select 1 from coupons);
 
 insert into loyalty_tiers (required_purchases, reward_description, discount_percent, coupon_scope, display_order)
 select * from (values
-  (2, '10% de descuento en tu próxima fragancia', 10::numeric, 'single_product', 1),
+  (2, '10% de descuento en tu próximo producto', 10::numeric, 'single_product', 1),
   (5, '20% de descuento en toda tu compra', 20::numeric, 'cart', 2),
-  (10, 'Fragancia de regalo sorpresa + 30% en toda tu compra', 30::numeric, 'cart', 3)
+  (10, 'Regalo sorpresa + 30% en toda tu compra', 30::numeric, 'cart', 3)
 ) as v(required_purchases, reward_description, discount_percent, coupon_scope, display_order)
 where not exists (select 1 from loyalty_tiers);
 
 insert into products (name, price, sale_price, on_sale, levels, category, brand, stock, vendor, sizes, description, images, cover_fit, featured)
 select * from (values
-  ('Oud Al Layl', 145000, 119000, true, array['arabe'], 'perfumes', 'Bayt Al Oud', 24, 'Distribuidora Oriental', array['30ml','50ml'], 'Un oud profundo y ahumado con fondo de ámbar, pensado para noches largas. Su estela dura más de 12 horas.', array['https://picsum.photos/seed/noire-p1-a/800/1000','https://picsum.photos/seed/noire-p1-b/800/1000'], 'cover', true),
-  ('Ámbar Real', 98000, null, false, array['arabe'], 'perfumes', 'Bayt Al Oud', 31, 'Distribuidora Oriental', array['30ml','50ml'], 'Ámbar cálido con toques de vainilla y resina, ideal para climas fríos y ocasiones especiales.', array['https://picsum.photos/seed/noire-p2-a/800/1000','https://picsum.photos/seed/noire-p2-b/800/1000'], 'cover', false),
-  ('Rosa de Taif', 132000, null, false, array['arabe'], 'perfumes', 'Dunas Collection', 18, 'Distribuidora Oriental', array['50ml'], 'La legendaria rosa de Taif combinada con azafrán y madera de oud. Elegante y persistente.', array['https://picsum.photos/seed/noire-p3-a/800/1000'], 'cover', true),
-  ('Almizcle Blanco', 87000, null, false, array['arabe'], 'perfumes', 'Dunas Collection', 40, 'Distribuidora Oriental', array['30ml','50ml'], 'Almizcle limpio y suave, perfecto para uso diario en la oficina o la universidad.', array['https://picsum.photos/seed/noire-p4-a/800/1000'], 'cover', false),
-  ('Oud Imperial', 79000, null, false, array['arabe'], 'perfumes', 'Bayt Al Oud', 15, 'Distribuidora Oriental', array['15ml'], 'Aceite concentrado de oud imperial, sin alcohol, de aplicación directa sobre la piel.', array['https://picsum.photos/seed/noire-p5-a/800/1000'], 'cover', false),
-  ('Musgo Noir', 165000, 139000, true, array['disenador'], 'perfumes', 'Essence House', 22, 'Essence House Labs', array['50ml','100ml'], 'Inspirado en los grandes clásicos de musgo de roble y bergamota. Elegancia atemporal para el hombre moderno.', array['https://picsum.photos/seed/noire-p6-a/800/1000','https://picsum.photos/seed/noire-p6-b/800/1000'], 'cover', true),
-  ('Vainilla Sport', 158000, null, false, array['disenador'], 'perfumes', 'Essence House', 27, 'Essence House Labs', array['100ml'], 'Fresco, dulce y deportivo. Vainilla suave sobre una base cítrica energizante.', array['https://picsum.photos/seed/noire-p7-a/800/1000'], 'cover', false),
-  ('Flor de Azahar', 149000, null, false, array['disenador'], 'perfumes', 'Essence House', 19, 'Essence House Labs', array['90ml'], 'Un ramo floral luminoso de azahar y jazmín con fondo almizclado.', array['https://picsum.photos/seed/noire-p8-a/800/1000'], 'cover', false),
-  ('Cuero Especiado', 172000, null, false, array['disenador'], 'perfumes', 'Essence House', 12, 'Essence House Labs', array['100ml'], 'Cuero curtido con especias cálidas: canela, cardamomo y pimienta negra.', array['https://picsum.photos/seed/noire-p9-a/800/1000'], 'cover', false),
-  ('Bergamota Real', 168000, null, false, array['disenador'], 'perfumes', 'Nocturne Paris', 16, 'Nocturne Import', array['100ml'], 'Cítrico y sofisticado, con bergamota de Calabria y toques amaderados.', array['https://picsum.photos/seed/noire-p10-a/800/1000'], 'cover', false),
-  ('Sal Marina & Cedro', 210000, null, false, array['nicho'], 'perfumes', 'Essence Rare', 9, 'Essence Rare Import', array['50ml','100ml'], 'Acuático mineral con cedro seco. Una fragancia de nicho para quienes buscan algo distinto.', array['https://picsum.photos/seed/noire-p11-a/800/1000'], 'cover', true),
-  ('Incienso Sagrado', 235000, 199000, true, array['nicho'], 'perfumes', 'Essence Rare', 7, 'Essence Rare Import', array['50ml'], 'Incienso denso y resinoso con mirra, en edición limitada.', array['https://picsum.photos/seed/noire-p12-a/800/1000'], 'cover', true),
-  ('Tabaco Dorado', 245000, null, false, array['nicho'], 'perfumes', 'Casa Noire', 6, 'Casa Noire Atelier', array['50ml','100ml'], 'Tabaco dulce con ron añejo y haba tonka. Nuestra fragancia insignia de alta perfumería.', array['https://picsum.photos/seed/noire-p13-a/800/1000'], 'cover', true),
-  ('Splash Vainilla & Coco', 45000, null, false, array['disenador'], 'splash-corporal', 'Essence House', 50, 'Essence House Labs', array['250ml'], 'Body splash tropical de vainilla y coco, hidrata y perfuma la piel al instante.', array['https://picsum.photos/seed/noire-p14-a/800/1000'], 'cover', false),
-  ('Splash Flor de Cerezo', 45000, 36000, true, array['disenador'], 'splash-corporal', 'Essence House', 44, 'Essence House Labs', array['250ml'], 'Flor de cerezo japonesa en una bruma corporal fresca y delicada.', array['https://picsum.photos/seed/noire-p15-a/800/1000'], 'cover', false),
-  ('Splash Almizcle Blanco', 42000, null, false, array['arabe'], 'splash-corporal', 'Dunas Collection', 38, 'Distribuidora Oriental', array['250ml'], 'La versión corporal de nuestro almizcle más vendido, para llevar la fragancia todo el día.', array['https://picsum.photos/seed/noire-p16-a/800/1000'], 'cover', false),
-  ('Difusor Oud & Rosa', 89000, null, false, array['nicho'], 'difusores', 'Casa Noire', 20, 'Casa Noire Atelier', array['200ml'], 'Difusor de varillas con oud y rosa que perfuma cualquier ambiente por semanas.', array['https://picsum.photos/seed/noire-p17-a/800/1000'], 'cover', false),
-  ('Difusor Cedro & Vainilla', 79000, null, false, array['disenador'], 'difusores', 'Essence House', 25, 'Essence House Labs', array['200ml'], 'Cálido y acogedor, ideal para salas y habitaciones.', array['https://picsum.photos/seed/noire-p18-a/800/1000'], 'cover', false),
-  ('Difusor Ámbar & Sándalo', 82000, 68000, true, array['arabe'], 'difusores', 'Dunas Collection', 17, 'Distribuidora Oriental', array['200ml'], 'Ámbar y sándalo en un difusor de larga duración, nuestro más vendido para el hogar.', array['https://picsum.photos/seed/noire-p19-a/800/1000'], 'cover', true)
+  ('Kit de Inicio', 899, 749, true, array['basico'], 'coleccion', 'Boceto Studio', 30, 'Proveedor Central', array[]::text[], 'Todo lo necesario para empezar en una sola caja. Nuestra forma favorita de dar la bienvenida a clientes nuevos.', array['https://picsum.photos/seed/boceto-p1-a/800/1000','https://picsum.photos/seed/boceto-p1-b/800/1000'], 'cover', true),
+  ('Caja Sorpresa', 1299, null, false, array['premium'], 'novedades', 'Boceto Studio', 18, 'Proveedor Central', array['Chica','Grande'], 'Una selección curada que cambia cada mes. Ideal para regalar o para darte un gusto.', array['https://picsum.photos/seed/boceto-p2-a/800/1000','https://picsum.photos/seed/boceto-p2-b/800/1000'], 'cover', true),
+  ('Paquete Premium', 2490, 2190, true, array['premium'], 'coleccion', 'Casa Norte', 12, 'Casa Norte', array[]::text[], 'Nuestros productos mejor calificados reunidos en un paquete con precio especial.', array['https://picsum.photos/seed/boceto-p3-a/800/1000'], 'cover', true),
+  ('Edición Limitada 01', 3200, null, false, array['exclusivo'], 'novedades', 'Taller Once', 5, 'Taller Once', array[]::text[], 'Producción corta y numerada. Cuando se acaba, no vuelve.', array['https://picsum.photos/seed/boceto-p4-a/800/1000','https://picsum.photos/seed/boceto-p4-b/800/1000'], 'cover', true),
+  ('Set Esencial', 650, null, false, array['basico'], 'esenciales', 'Casa Norte', 40, 'Casa Norte', array[]::text[], 'Lo básico que todos necesitan, con la calidad de siempre.', array['https://picsum.photos/seed/boceto-p5-a/800/1000'], 'cover', false),
+  ('Artículo Clásico', 480, null, false, array['basico'], 'coleccion', 'Estudio Sur', 35, 'Estudio Sur', array['Chico','Mediano','Grande'], 'El favorito de nuestros clientes desde el primer día. Disponible en tres tamaños.', array['https://picsum.photos/seed/boceto-p6-a/800/1000'], 'cover', false),
+  ('Artículo Clásico Plus', 720, null, false, array['premium'], 'coleccion', 'Estudio Sur', 22, 'Estudio Sur', array['Mediano','Grande'], 'La versión mejorada del clásico, con materiales superiores y mejor acabado.', array['https://picsum.photos/seed/boceto-p7-a/800/1000'], 'cover', false),
+  ('Pack Dúo', 1150, 990, true, array['premium'], 'esenciales', 'Boceto Studio', 16, 'Proveedor Central', array[]::text[], 'Dos de nuestros más vendidos juntos, con ahorro incluido.', array['https://picsum.photos/seed/boceto-p8-a/800/1000'], 'cover', false),
+  ('Pieza de Colección', 4500, null, false, array['exclusivo'], 'coleccion', 'Taller Once', 3, 'Taller Once', array[]::text[], 'Hecha a mano, pieza por pieza. Para quienes buscan algo verdaderamente único.', array['https://picsum.photos/seed/boceto-p9-a/800/1000','https://picsum.photos/seed/boceto-p9-b/800/1000'], 'cover', true),
+  ('Novedad de Temporada', 1050, null, false, array['premium'], 'novedades', 'Taller Once', 20, 'Taller Once', array[]::text[], 'Lo más nuevo de la temporada, recién llegado a la tienda.', array['https://picsum.photos/seed/boceto-p10-a/800/1000'], 'cover', true),
+  ('Básico del Día', 299, null, false, array['basico'], 'esenciales', 'Casa Norte', 60, 'Casa Norte', array[]::text[], 'Precio accesible, calidad confiable. Perfecto para el uso diario.', array['https://picsum.photos/seed/boceto-p11-a/800/1000'], 'cover', false),
+  ('Combo Familiar', 1890, 1590, true, array['basico'], 'esenciales', 'Boceto Studio', 14, 'Proveedor Central', array[]::text[], 'Pensado para compartir: más cantidad, mejor precio por unidad.', array['https://picsum.photos/seed/boceto-p12-a/800/1000'], 'cover', false),
+  ('Edición Aniversario', 2800, null, false, array['exclusivo'], 'novedades', 'Taller Once', 8, 'Taller Once', array[]::text[], 'Celebramos un año más con una edición especial que solo estará disponible por tiempo limitado.', array['https://picsum.photos/seed/boceto-p13-a/800/1000'], 'cover', false),
+  ('Complemento Práctico', 350, null, false, array['basico'], 'esenciales', 'Estudio Sur', 45, 'Estudio Sur', array[]::text[], 'El detalle que completa cualquier compra. Pequeño, útil y bien hecho.', array['https://picsum.photos/seed/boceto-p14-a/800/1000'], 'cover', false),
+  ('Suscripción Mensual', 990, null, false, array['premium'], 'novedades', 'Boceto Studio', 99, 'Proveedor Central', array['1 mes','3 meses','6 meses'], 'Recibe cada mes una selección nueva en la puerta de tu casa. Cancela cuando quieras.', array['https://picsum.photos/seed/boceto-p15-a/800/1000'], 'cover', false),
+  ('Tarjeta de Regalo', 500, null, false, array['basico'], 'coleccion', 'Boceto', 999, 'Boceto', array[]::text[], 'El regalo que nunca falla: quien la recibe elige lo que más le guste de la tienda.', array['https://picsum.photos/seed/boceto-p16-a/800/1000'], 'contain', false)
 ) as v(name, price, sale_price, on_sale, levels, category, brand, stock, vendor, sizes, description, images, cover_fit, featured)
 where not exists (select 1 from products);
 
 insert into reviews (name, rating, quote, image_url, status)
 select * from (values
-  ('Camila Restrepo', 5, 'El Oud Al Layl dura toda la noche, huele carísimo. Ya es mi fragancia de firma.', 'https://picsum.photos/seed/noire-review-1/200/200', 'approved'),
-  ('Juan Pablo Gómez', 5, 'Pedí el Musgo Noir y llegó súper rápido, huele igual de elegante que los originales.', 'https://picsum.photos/seed/noire-review-2/200/200', 'approved'),
-  ('Valentina Ríos', 4, 'Excelente atención por WhatsApp, me asesoraron bien para elegir mi fragancia de nicho.', 'https://picsum.photos/seed/noire-review-3/200/200', 'approved'),
-  ('Andrés Felipe Torres', 5, 'El difusor de Oud & Rosa dejó mi sala oliendo delicioso por semanas enteras.', 'https://picsum.photos/seed/noire-review-4/200/200', 'approved'),
-  ('Mariana Londoño', 5, 'Mi fragancia favorita es el Ámbar Real, ya voy en el tercer frasco este año.', 'https://picsum.photos/seed/noire-review-5/200/200', 'approved'),
-  ('Santiago Herrera', 4, 'Buenos precios comparado con otras perfumerías de Medellín, y llegó bien empacado.', 'https://picsum.photos/seed/noire-review-6/200/200', 'approved'),
-  ('Isabella Cardona', 5, 'Me encantó el programa de fidelidad, ya reclamé mi primer premio y fue muy fácil.', 'https://picsum.photos/seed/noire-review-7/200/200', 'approved')
+  ('Camila Herrera', 5, 'Mi pedido llegó en dos días y perfectamente empacado. Se nota el cuidado en cada detalle.', 'https://picsum.photos/seed/boceto-review-1/200/200', 'approved'),
+  ('Juan Pablo Gómez', 5, 'Comprar fue facilísimo: elegí, confirmé por WhatsApp y listo. Súper recomendado.', 'https://picsum.photos/seed/boceto-review-2/200/200', 'approved'),
+  ('Valentina Ríos', 4, 'Excelente atención, resolvieron todas mis dudas antes de comprar.', 'https://picsum.photos/seed/boceto-review-3/200/200', 'approved'),
+  ('Andrés Torres', 5, 'La calidad superó lo que esperaba por el precio. Ya hice mi segundo pedido.', 'https://picsum.photos/seed/boceto-review-4/200/200', 'approved'),
+  ('Mariana López', 5, 'Me encanta poder pagar al recibir. Todo muy confiable y rápido.', 'https://picsum.photos/seed/boceto-review-5/200/200', 'approved'),
+  ('Santiago Martínez', 4, 'Buenos precios y mucha variedad. El seguimiento de mi pedido fue impecable.', 'https://picsum.photos/seed/boceto-review-6/200/200', 'approved'),
+  ('Isabella Cruz', 5, 'El programa de recompensas es genial, ya reclamé mi primer descuento.', 'https://picsum.photos/seed/boceto-review-7/200/200', 'approved')
 ) as v(name, rating, quote, image_url, status)
 where not exists (select 1 from reviews);

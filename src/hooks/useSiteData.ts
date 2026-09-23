@@ -1,74 +1,20 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import type { Category, HomeBanner, Level, SiteSettings } from "../types";
+import { useSiteData } from "../context/SiteDataContext";
+import type { HomeBanner } from "../types";
 
 export function useSiteSettings() {
-  const [settings, setSettings] = useState<SiteSettings | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let active = true;
-    supabase
-      .from("site_settings")
-      .select("*")
-      .eq("id", true)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (!active) return;
-        setSettings(data as SiteSettings | null);
-        setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
+  const { settings, loading } = useSiteData();
   return { settings, loading };
 }
 
 export function useCategories() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let active = true;
-    supabase
-      .from("categories")
-      .select("*")
-      .order("display_order", { ascending: true })
-      .then(({ data }) => {
-        if (!active) return;
-        setCategories((data as Category[] | null) ?? []);
-        setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
+  const { categories, loading } = useSiteData();
   return { categories, loading };
 }
 
 export function useLevels() {
-  const [levels, setLevels] = useState<Level[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let active = true;
-    supabase
-      .from("levels")
-      .select("*")
-      .order("display_order", { ascending: true })
-      .then(({ data }) => {
-        if (!active) return;
-        setLevels((data as Level[] | null) ?? []);
-        setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
+  const { levels, loading } = useSiteData();
   return { levels, loading };
 }
 
@@ -94,4 +40,14 @@ export function useHomeBanner() {
   }, []);
 
   return { banner, loading };
+}
+
+export function usePageTitle(title?: string) {
+  const { settings } = useSiteData();
+
+  useEffect(() => {
+    const name = settings?.business_name;
+    if (!name) return;
+    document.title = title ? `${title} · ${name}` : settings.tagline ? `${name} — ${settings.tagline}` : name;
+  }, [title, settings]);
 }

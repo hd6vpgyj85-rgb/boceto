@@ -3,15 +3,21 @@ import "./StarRating.css";
 interface StarRatingProps {
   rating: number;
   size?: number;
+  animated?: boolean;
 }
 
-export default function StarRating({ rating, size = 16 }: StarRatingProps) {
-  const stars = [1, 2, 3, 4, 5];
+export default function StarRating({ rating, size = 16, animated = false }: StarRatingProps) {
+  const rounded = Math.round(rating);
 
   return (
-    <div className="star-rating" style={{ fontSize: size }} aria-label={`${rating} de 5 estrellas`}>
-      {stars.map((n) => (
-        <span key={n} className={n <= Math.round(rating) ? "star star-filled" : "star"}>
+    <div
+      className={`star-rating ${animated ? "star-rating-animated" : ""}`}
+      style={{ fontSize: size }}
+      role="img"
+      aria-label={`${rating.toFixed(1)} de 5 estrellas`}
+    >
+      {[1, 2, 3, 4, 5].map((n) => (
+        <span key={n} className={n <= rounded ? "star star-filled" : "star"} style={{ animationDelay: `${n * 70}ms` }}>
           ★
         </span>
       ))}

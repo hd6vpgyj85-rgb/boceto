@@ -4,6 +4,12 @@
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
   overflow: hidden;
+  background: var(--color-bg);
+  transition: border-color var(--transition-fast) var(--ease-out);
+}
+
+.qty-stepper:hover {
+  border-color: rgba(var(--color-accent-rgb), 0.45);
 }
 
 .qty-stepper button {
@@ -12,11 +18,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
   color: var(--color-text);
   transition:
     background var(--transition-fast) var(--ease-out),
     color var(--transition-fast) var(--ease-out);
+}
+
+.qty-stepper-md button {
+  width: 46px;
+  height: 46px;
 }
 
 .qty-stepper button:hover:not(:disabled) {
@@ -25,17 +35,69 @@
 }
 
 .qty-stepper button:disabled {
-  opacity: 0.35;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
-.qty-stepper button:active:not(:disabled) {
-  transform: scale(0.9);
+.qty-stepper button:active:not(:disabled) > * {
+  transform: scale(0.75);
+}
+
+.qty-stepper button > * {
+  transition: transform var(--transition-fast) var(--ease-out);
+}
+
+.qty-stepper-minus {
+  display: block;
+  width: 12px;
+  height: 2.4px;
+  border-radius: 2px;
+  background: currentColor;
 }
 
 .qty-stepper-value {
-  min-width: 32px;
+  position: relative;
+  min-width: 34px;
+  height: 24px;
+  overflow: hidden;
   text-align: center;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.qty-stepper-number {
+  position: absolute;
+  inset: 0;
+  line-height: 24px;
+}
+
+.qty-up {
+  animation: qty-from-below 260ms var(--ease-out);
+}
+
+.qty-down {
+  animation: qty-from-above 260ms var(--ease-out);
+}
+
+@keyframes qty-from-below {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes qty-from-above {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }

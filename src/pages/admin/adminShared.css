@@ -333,3 +333,331 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Pulido general del admin ---------- */
+
+.admin-page-title {
+  animation: admin-rise 500ms var(--ease-out) backwards;
+}
+
+.admin-page-hint {
+  color: var(--color-text-muted);
+  font-size: 0.86rem;
+  max-width: 70ch;
+  margin: -12px 0 24px;
+  animation: admin-rise 500ms var(--ease-out) 60ms backwards;
+}
+
+.admin-form-error {
+  margin-top: 14px;
+  color: var(--color-danger);
+  font-size: 0.84rem;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 84, 112, 0.08);
+  border: 1px solid rgba(255, 84, 112, 0.25);
+  animation: shake 420ms var(--ease-out);
+}
+
+.admin-mini-spinner {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border-strong);
+  border-top-color: var(--color-accent);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes admin-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.admin-table-wrap {
+  animation: admin-rise 500ms var(--ease-out) 80ms backwards;
+}
+
+.admin-table tbody tr {
+  animation: admin-row-in 400ms var(--ease-out) backwards;
+}
+
+.admin-table tbody tr:nth-child(2) {
+  animation-delay: 30ms;
+}
+
+.admin-table tbody tr:nth-child(3) {
+  animation-delay: 60ms;
+}
+
+.admin-table tbody tr:nth-child(4) {
+  animation-delay: 90ms;
+}
+
+.admin-table tbody tr:nth-child(5) {
+  animation-delay: 120ms;
+}
+
+.admin-table tbody tr:nth-child(n + 6) {
+  animation-delay: 150ms;
+}
+
+@keyframes admin-row-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.admin-table td {
+  transition: background var(--transition-fast) var(--ease-out);
+}
+
+.admin-modal-overlay {
+  animation: admin-fade 220ms var(--ease-out);
+  backdrop-filter: blur(4px);
+}
+
+@keyframes admin-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.admin-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast) var(--ease-out), background var(--transition-fast) var(--ease-out), transform var(--transition-base) var(--ease-out);
+}
+
+.admin-modal-close:hover {
+  transform: rotate(90deg);
+}
+
+.admin-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-stock::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-success);
+}
+
+.admin-stock.is-low::before {
+  background: var(--color-star);
+}
+
+.admin-stock.is-out {
+  color: var(--color-text-dim);
+}
+
+.admin-stock.is-out::before {
+  background: var(--color-danger);
+}
+
+.admin-image-add {
+  transition: border-color var(--transition-fast) var(--ease-out), color var(--transition-fast) var(--ease-out), background var(--transition-fast) var(--ease-out);
+}
+
+.admin-image-add:hover {
+  background: rgba(var(--color-accent-rgb), 0.06);
+}
+
+.admin-image-thumb-wrap {
+  animation: pop 360ms var(--ease-out) backwards;
+}
+
+.admin-row-thumb {
+  display: block;
+  transition: transform var(--transition-base) var(--ease-out);
+}
+
+.admin-table tr:hover .admin-row-thumb {
+  transform: scale(1.08);
+}
+
+.admin-row-thumb-empty {
+  background: var(--color-bg-elevated);
+  border: 1px dashed var(--color-border-strong);
+}
+
+.products-name {
+  display: block;
+  font-weight: 600;
+  transition: color var(--transition-fast) var(--ease-out);
+}
+
+.products-name:hover {
+  color: var(--color-accent);
+}
+
+.products-flag {
+  display: inline-flex;
+  margin: 4px 6px 0 0;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  background: rgba(var(--color-accent-rgb), 0.12);
+}
+
+.products-flag.is-sale {
+  color: var(--color-danger);
+  background: rgba(255, 84, 112, 0.12);
+}
+
+.products-old-price {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--color-text-dim);
+}
+
+.products-new-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.products-new-btn svg {
+  transition: transform var(--transition-base) var(--ease-out);
+}
+
+.products-new-btn:hover svg {
+  transform: rotate(90deg);
+}
+
+.admin-filter-row {
+  margin-bottom: 20px;
+  animation: admin-rise 450ms var(--ease-out) 40ms backwards;
+}
+
+.admin-row-avatar {
+  border-radius: var(--radius-full);
+}
+
+.admin-row-initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: rgba(var(--color-accent-rgb), 0.12);
+}
+
+.admin-badge-inline {
+  display: flex;
+  width: fit-content;
+  margin-top: 4px;
+  font-size: 0.62rem;
+  padding: 2px 8px;
+}
+
+.admin-review-quote {
+  max-width: 320px;
+  color: var(--color-text-muted);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.admin-nowrap {
+  white-space: nowrap;
+}
+
+.admin-inline-form {
+  padding: 22px;
+  margin-bottom: 24px;
+  animation: admin-rise 380ms var(--ease-out);
+  border-color: rgba(var(--color-accent-rgb), 0.3);
+}
+
+.admin-input-with-action {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-input-with-action input {
+  flex: 1;
+  min-width: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.admin-input-with-action .btn svg {
+  transition: transform var(--transition-base) var(--ease-out);
+}
+
+.admin-input-with-action .btn:hover svg {
+  transform: rotate(20deg) scale(1.15);
+}
+
+.admin-coupon-code {
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  color: var(--color-accent);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed rgba(var(--color-accent-rgb), 0.45);
+  transition:
+    background var(--transition-fast) var(--ease-out),
+    transform var(--transition-fast) var(--ease-out);
+}
+
+.admin-coupon-code:hover {
+  background: rgba(var(--color-accent-rgb), 0.08);
+}
+
+.admin-coupon-code:active {
+  transform: scale(0.96);
+}
+
+.admin-usage-bar {
+  display: block;
+  width: 64px;
+  height: 4px;
+  margin-top: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+  overflow: hidden;
+}
+
+.admin-usage-bar span {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: inherit;
+  transition: width 600ms var(--ease-out);
+}
+
+.admin-row-muted td {
+  opacity: 0.6;
+}
+
+.admin-row-muted td:last-child {
+  opacity: 1;
+}
+
+.admin-row-link {
+  cursor: pointer;
+}

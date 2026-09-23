@@ -1,46 +1,202 @@
 .login-page {
+  position: relative;
+  overflow: hidden;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  background: radial-gradient(circle at 50% 0%, rgba(var(--color-accent-rgb), 0.1), var(--color-bg) 60%);
+  padding: 24px 16px;
+  background: radial-gradient(circle at 50% 0%, rgba(var(--color-accent-rgb), 0.12), var(--color-bg) 60%);
+}
+
+.login-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+}
+
+.login-orb-1 {
+  width: 360px;
+  height: 360px;
+  top: -80px;
+  right: -60px;
+  background: rgba(var(--color-accent-rgb), 0.18);
+  animation: orb-drift 16s ease-in-out infinite;
+}
+
+.login-orb-2 {
+  width: 280px;
+  height: 280px;
+  bottom: -60px;
+  left: -60px;
+  background: rgba(var(--color-accent-rgb), 0.1);
+  animation: orb-drift 20s ease-in-out infinite reverse;
+}
+
+@keyframes orb-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-40px, 30px) scale(1.15);
+  }
 }
 
 .login-card {
+  position: relative;
   width: 100%;
-  max-width: 380px;
-  padding: 32px;
+  max-width: 400px;
+  padding: 32px 28px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  background: rgba(24, 24, 28, 0.85);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+  animation: login-in 700ms var(--ease-out) backwards;
 }
 
-.login-card h1 {
+.login-card.is-error {
+  animation: shake 420ms var(--ease-out);
+}
+
+@keyframes login-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.login-brand {
+  align-self: center;
+  font-family: var(--font-display);
   font-size: 1.8rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.login-brand > span {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  line-height: 1;
+}
+
+.login-brand img {
+  height: 40px;
+  width: auto;
+}
+
+.login-head {
   text-align: center;
 }
 
-.login-subtitle {
+.login-head h1 {
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+.login-head p {
   color: var(--color-text-muted);
-  font-size: 0.85rem;
-  text-align: center;
-  margin-top: -8px;
+  font-size: 0.86rem;
+  margin-top: 4px;
+}
+
+.login-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.login-modes > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 0.72rem;
+  color: var(--color-text-dim);
+  line-height: 1.35;
+}
+
+.login-modes svg {
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+.login-modes span {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-modes strong {
+  color: var(--color-text);
+  font-size: 0.8rem;
+}
+
+.login-secret {
+  position: relative;
+  display: flex;
+}
+
+.login-secret input {
+  flex: 1;
+  padding-right: 82px;
+}
+
+.login-secret button {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  transition: color var(--transition-fast) var(--ease-out), background var(--transition-fast) var(--ease-out);
+}
+
+.login-secret button:hover {
+  color: var(--color-accent);
+  background: rgba(var(--color-accent-rgb), 0.1);
 }
 
 .login-error {
   color: var(--color-danger);
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   text-align: center;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 84, 112, 0.08);
+  animation: fade-up 300ms var(--ease-out);
 }
 
 .login-back {
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   font-size: 0.82rem;
   color: var(--color-text-dim);
+  transition: color var(--transition-fast) var(--ease-out), gap var(--transition-base) var(--ease-out);
 }
 
 .login-back:hover {
   color: var(--color-accent);
+  gap: 10px;
+}
+
+@media (max-width: 380px) {
+  .login-modes {
+    grid-template-columns: 1fr;
+  }
 }

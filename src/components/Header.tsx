@@ -1,119 +1,149 @@
-import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useSiteSettings, useCategories } from "../hooks/useSiteData";
 import { useCart } from "../context/CartContext";
+import { useScrolledPast } from "../hooks/useScrollY";
+import { BagIcon, CloseIcon, SearchIcon, UserIcon } from "./Icons";
 import "./Header.css";
 
 export default function Header() {
-  const { settings } = useSiteSettings();
+  const { settings, loading } = useSiteSettings();
   const { categories } = useCategories();
-  const { itemCount } = useCart();
+  const { itemCount, lastAdded } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
+  const [announcementHidden, setAnnouncementHidden] = useState(false);
+  const scrolled = useScrolledPast(8);
+  const location = useLocation();
 
-  const closeMenu = () => setMenuOpen(false);
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
+  const announcement = settings?.announcement?.trim();
+  const navLinks = [
+    { to: "/", label: "Inicio", end: true },
+    ...categories.map((c) => ({ to: `/${c.slug}`, label: c.name, end: false })),
+    { to: "/productos", label: "Catálogo", end: false },
+  ];
 
   return (
-    <header className="site-header">
-      <div className="container site-header-inner">
-        <Link to="/" className="site-logo" onClick={closeMenu}>
-          {settings?.logo_url ? (
-            <img src={settings.logo_url} alt={settings.business_name} className="site-logo-image" />
-          ) : (
-            <span className="site-logo-text">{settings?.business_name ?? "Cargando…"}</span>
-          )}
-        </Link>
-
-        <nav className={`site-nav ${menuOpen ? "site-nav-open" : ""}`}>
-          <NavLink to="/" end onClick={closeMenu}>
-            Inicio
-          </NavLink>
-          {categories.map((cat) => (
-            <NavLink key={cat.slug} to={`/${cat.slug}`} onClick={closeMenu}>
-              {cat.name}
-            </NavLink>
-          ))}
-          <NavLink to="/productos" onClick={closeMenu}>
-            Todos
-          </NavLink>
-          <NavLink to="/ofertas" onClick={closeMenu}>
-            Ofertas
-          </NavLink>
-        </nav>
-
-        <div className="site-header-actions">
+    <>
+      {announcement && !announcementHidden && (
+        <div className="announcement-bar">
+          <p className="announcement-text">{announcement}</p>
           <button
             type="button"
-            className="icon-btn"
-            aria-label="Buscar"
-            onClick={() => navigate("/buscar")}
+            className="announcement-close"
+            onClick={() => setAnnouncementHidden(true)}
+            aria-label="Ocultar aviso"
           >
-            <SearchIcon />
-          </button>
-          <Link to="/admin/login" className="icon-btn" aria-label="Acceso">
-            <LockIcon />
-          </Link>
-          <Link to="/carrito" className="icon-btn cart-btn" aria-label="Carrito">
-            <CartIcon />
-            {itemCount > 0 && <span className="cart-count">{itemCount}</span>}
-          </Link>
-          <button
-            type="button"
-            className="icon-btn menu-toggle"
-            aria-label="Menú"
-            onClick={() => setMenuOpen((v) => !v)}
-          >
-            {menuOpen ? <CloseIcon /> : <MenuIcon />}
+            <CloseIcon size={14} />
           </button>
         </div>
+      )}
+
+      <header className={`site-header ${scrolled ? "is-scrolled" : ""} ${menuOpen ? "is-menu-open" : ""}`}>
+        <div className="container site-header-inner">
+          <Link to="/" className="site-logo" aria-label="Ir al inicio">
+            {loading ? (
+              <span className="skeleton site-logo-skeleton" />
+            ) : settings?.logo_url ? (
+              <img src={settings.logo_url} alt={settings.business_name} className="site-logo-image" />
+            ) : (
+              <span className="site-logo-text">
+                {settings?.business_name}
+                <span className="site-logo-dot" />
+              </span>
+            )}
+          </Link>
+
+          <nav className="site-nav" aria-label="Principal">
+            {navLinks.map((link) => (
+              <NavLink key={link.to} to={link.to} end={link.end}>
+                {link.label}
+              </NavLink>
+            ))}
+            <NavLink to="/ofertas" className="site-nav-sale">
+              Ofertas
+            </NavLink>
+          </nav>
+
+          <div className="site-header-actions">
+            <Link to="/buscar" className="icon-btn" aria-label="Buscar productos">
+              <SearchIcon />
+            </Link>
+            <Link to="/admin/login" className="icon-btn icon-btn-hide-sm" aria-label="Mi cuenta">
+              <UserIcon />
+            </Link>
+            <Link
+              to="/carrito"
+              className="icon-btn cart-btn"
+              aria-label={`Carrito, ${itemCount} producto${itemCount === 1 ? "" : "s"}`}
+            >
+              <span key={lastAdded?.addedAt ?? 0} className={lastAdded ? "cart-btn-icon is-bumping" : "cart-btn-icon"}>
+                <BagIcon />
+              </span>
+              {itemCount > 0 && (
+                <span key={itemCount} className="cart-count">
+                  {itemCount > 99 ? "99+" : itemCount}
+                </span>
+              )}
+            </Link>
+            <button
+              type="button"
+              className={`menu-toggle ${menuOpen ? "is-open" : ""}`}
+              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+          </div>
+        </div>
+
+      <div className={`mobile-menu ${menuOpen ? "is-open" : ""}`} aria-hidden={!menuOpen}>
+        <button type="button" className="mobile-menu-backdrop" tabIndex={-1} onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" />
+        <nav className="mobile-menu-panel" aria-label="Menú móvil">
+          {[...navLinks, { to: "/ofertas", label: "Ofertas", end: false }, { to: "/buscar", label: "Buscar", end: false }].map(
+            (link, i) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                className="mobile-menu-link"
+                style={{ transitionDelay: menuOpen ? `${80 + i * 45}ms` : "0ms" }}
+                tabIndex={menuOpen ? 0 : -1}
+              >
+                {link.label}
+                <span className="mobile-menu-arrow">→</span>
+              </NavLink>
+            ),
+          )}
+          <Link
+            to="/admin/login"
+            className="mobile-menu-account"
+            style={{ transitionDelay: menuOpen ? `${80 + (navLinks.length + 2) * 45}ms` : "0ms" }}
+            tabIndex={menuOpen ? 0 : -1}
+          >
+            <UserIcon size={18} />
+            Mi cuenta / tarjeta de recompensas
+          </Link>
+        </nav>
       </div>
-    </header>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="11" cy="11" r="7" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-  );
-}
-
-function LockIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <rect x="4" y="10" width="16" height="10" rx="2" />
-      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-    </svg>
-  );
-}
-
-function CartIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="9" cy="21" r="1" />
-      <circle cx="19" cy="21" r="1" />
-      <path d="M1 1h4l2.6 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
-    </svg>
-  );
-}
-
-function MenuIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <line x1="3" y1="12" x2="21" y2="12" />
-      <line x1="3" y1="18" x2="21" y2="18" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
+      </header>
+    </>
   );
 }

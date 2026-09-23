@@ -3,6 +3,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { uploadImage, deleteImageByUrl } from "../../lib/imageUpload";
 import { useCategories, useLevels } from "../../hooks/useSiteData";
+import { useToast } from "../../context/ToastContext";
+import { discountPercent, formatCurrency } from "../../lib/format";
+import { ArrowLeftIcon, CloseIcon, PlusIcon } from "../../components/Icons";
 import type { Product } from "../../types";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import "./adminShared.css";
@@ -14,6 +17,7 @@ export default function ProductFormPage() {
   const isNew = !id;
   const { categories } = useCategories();
   const { levels } = useLevels();
+  const toast = useToast();
 
   const [loading, setLoading] = useState(!isNew);
   const [notFound, setNotFound] = useState(false);
@@ -91,8 +95,9 @@ export default function ProductFormPage() {
         uploaded.push(await uploadImage(file, "products"));
       }
       setImages((prev) => [...prev, ...uploaded]);
+      toast(uploaded.length === 1 ? "Imagen agregada" : `${uploaded.length} imágenes agregadas`, "success");
     } catch {
-      setError("No se pudieron subir algunas imágenes.");
+      toast("No se pudieron subir algunas imágenes", "error");
     } finally {
       setUploading(false);
     }
@@ -114,15 +119,21 @@ export default function ProductFormPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
     setError(null);
+    const priceValue = Number(price) || 0;
+    const saleValue = salePrice ? Number(salePrice) : null;
+    if (onSale && (saleValue == null || saleValue >= priceValue)) {
+      setError("Para marcarlo en oferta, el precio con descuento debe ser menor al precio normal.");
+      return;
+    }
+    setSaving(true);
 
     const payload = {
-      name,
       brand,
       vendor,
-      price: Number(price) || 0,
-      sale_price: salePrice ? Number(salePrice) : null,
+      name: name.trim(),
+      price: priceValue,
+      sale_price: saleValue,
       on_sale: onSale,
       category: category || null,
       levels: selectedLevels,
@@ -145,9 +156,11 @@ export default function ProductFormPage() {
     setSaving(false);
 
     if (saveError) {
-      setError("No se pudo guardar el producto.");
+      setError("No se pudo guardar el producto. Revisa los datos e inténtalo de nuevo.");
+      toast("No se pudo guardar el producto", "error");
       return;
     }
+    toast(isNew ? `«${payload.name}» ya está en tu catálogo` : "Cambios guardados", "success");
     navigate("/admin/productos");
   };
 
@@ -155,9 +168,17 @@ export default function ProductFormPage() {
     if (!id) return;
     if (!window.confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`)) return;
     setDeleting(true);
-    await supabase.from("products").delete().eq("id", id);
+    const { error: deleteError } = await supabase.from("products").delete().eq("id", id);
+    if (deleteError) {
+      setDeleting(false);
+      toast("No se pudo eliminar el producto", "error");
+      return;
+    }
+    toast(`«${name}» eliminado`, "info");
     navigate("/admin/productos");
   };
+
+  const salePreview = onSale ? discountPercent(Number(price) || 0, salePrice ? Number(salePrice) : null) : 0;
 
   if (loading) return <LoadingSpinner />;
   if (notFound) {
@@ -174,9 +195,15 @@ export default function ProductFormPage() {
   return (
     <div className="product-form-page">
       <Link to="/admin/productos" className="product-form-back">
-        ← Volver a productos
+        <ArrowLeftIcon size={15} />
+        Volver a productos
       </Link>
       <h1 className="admin-page-title">{isNew ? "Nuevo producto" : "Editar producto"}</h1>
+      <p className="admin-page-hint">
+        {isNew
+          ? "Completa lo esencial: imagen, nombre, precio y existencias. Lo demás puedes afinarlo después."
+          : "Los cambios se reflejan en la tienda en cuanto guardas."}
+      </p>
 
       <form onSubmit={handleSubmit} className="product-form">
         <section className="product-form-section">
@@ -185,18 +212,29 @@ export default function ProductFormPage() {
             {images.map((img, i) => (
               <div key={img} className={`product-form-thumb ${i === 0 ? "is-cover" : ""}`}>
                 <img src={img} alt="" onClick={() => makeCover(i)} />
-                <button type="button" className="admin-image-remove" onClick={() => removeImage(i)}>
-                  ×
+                <button type="button" className="admin-image-remove" onClick={() => removeImage(i)} aria-label="Quitar imagen">
+                  <CloseIcon size={12} />
                 </button>
                 {i === 0 && <span className="product-form-cover-badge">Portada</span>}
               </div>
             ))}
-            <label className="admin-image-add">
-              {uploading ? "…" : "+"}
-              <input type="file" accept="image/*" multiple onChange={(e) => handleUpload(e.target.files)} />
+            <label className={`admin-image-add ${uploading ? "is-uploading" : ""}`}>
+              {uploading ? <span className="admin-mini-spinner" /> : <PlusIcon size={22} />}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                disabled={uploading}
+                onChange={(e) => {
+                  handleUpload(e.target.files);
+                  e.target.value = "";
+                }}
+              />
             </label>
           </div>
-          <p className="product-form-hint">Toca una miniatura para hacerla portada.</p>
+          <p className="product-form-hint">
+            {images.length === 0 ? "Sube al menos una foto: los productos con imagen venden más." : "Toca una miniatura para hacerla portada."}
+          </p>
 
           <label className="product-form-toggle">
             <input type="checkbox" checked={coverContain} onChange={(e) => setCoverContain(e.target.checked)} />
@@ -211,23 +249,32 @@ export default function ProductFormPage() {
             <input required value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="field">
-            <label>Precio</label>
-            <input required type="number" min="0" value={price} onChange={(e) => setPrice(e.target.value)} />
-          </div>
-          <div className="field">
-            <label>Precio de oferta (antes)</label>
-            <input
-              type="number"
-              min="0"
-              placeholder="Precio de oferta (antes)"
-              value={salePrice}
-              onChange={(e) => setSalePrice(e.target.value)}
-            />
+            <label>Precio normal</label>
+            <input required type="number" min="0" step="any" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} />
           </div>
           <label className="product-form-toggle">
             <input type="checkbox" checked={onSale} onChange={(e) => setOnSale(e.target.checked)} />
             Producto en oferta
           </label>
+          {onSale && (
+            <div className="field product-form-sale">
+              <label>Precio con descuento</label>
+              <input
+                type="number"
+                min="0"
+                step="any"
+                inputMode="decimal"
+                placeholder="Menor al precio normal"
+                value={salePrice}
+                onChange={(e) => setSalePrice(e.target.value)}
+              />
+              {salePreview > 0 && (
+                <span className="product-form-sale-preview" key={salePreview}>
+                  Se mostrará como <strong>−{salePreview}%</strong> · antes {formatCurrency(Number(price) || 0)}
+                </span>
+              )}
+            </div>
+          )}
           <label className="product-form-toggle">
             <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
             Destacado / top ventas
@@ -238,6 +285,7 @@ export default function ProductFormPage() {
           <h2>Categoría</h2>
           <div className="field">
             <select value={category} onChange={(e) => setCategory(e.target.value)}>
+              <option value="">Sin categoría</option>
               {categories.map((c) => (
                 <option key={c.slug} value={c.slug}>
                   {c.name}
@@ -249,6 +297,7 @@ export default function ProductFormPage() {
 
         <section className="product-form-section">
           <h2>Nivel (puedes elegir varios)</h2>
+          {levels.length === 0 && <p className="product-form-hint">Aún no hay niveles. Créalos en «Contenido de inicio».</p>}
           <div className="chip-row">
             {levels.map((level) => (
               <button
@@ -271,15 +320,15 @@ export default function ProductFormPage() {
           </div>
           <div className="field">
             <label>Existencias (stock)</label>
-            <input required type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} />
+            <input required type="number" min="0" step="1" inputMode="numeric" value={stock} onChange={(e) => setStock(e.target.value)} />
           </div>
           <div className="field">
             <label>Proveedor (opcional)</label>
             <input value={vendor} onChange={(e) => setVendor(e.target.value)} />
           </div>
           <div className="field">
-            <label>Tamaños (separados por coma)</label>
-            <input value={sizes} onChange={(e) => setSizes(e.target.value)} placeholder="30ml, 50ml" />
+            <label>Opciones / variantes (separadas por coma)</label>
+            <input value={sizes} onChange={(e) => setSizes(e.target.value)} placeholder="Chico, Mediano, Grande" />
           </div>
         </section>
 
@@ -295,20 +344,28 @@ export default function ProductFormPage() {
           </div>
         </section>
 
-        {error && <p className="checkout-coupon-error">{error}</p>}
+        {error && (
+          <p className="admin-form-error" key={error}>
+            {error}
+          </p>
+        )}
 
-        <button type="submit" className="btn btn-primary btn-block product-form-submit" disabled={saving || uploading}>
-          {saving ? "Guardando…" : "Guardar producto"}
+        <button
+          type="submit"
+          className={`btn btn-primary btn-block product-form-submit ${saving ? "btn-loading" : ""}`}
+          disabled={saving || uploading}
+        >
+          {saving ? "Guardando" : isNew ? "Publicar producto" : "Guardar cambios"}
         </button>
 
         {!isNew && (
           <button
             type="button"
-            className="btn btn-danger btn-block product-form-delete"
+            className={`btn btn-danger btn-block product-form-delete ${deleting ? "btn-loading" : ""}`}
             onClick={handleDelete}
             disabled={deleting}
           >
-            {deleting ? "Eliminando…" : "Eliminar producto"}
+            {deleting ? "Eliminando" : "Eliminar producto"}
           </button>
         )}
       </form>

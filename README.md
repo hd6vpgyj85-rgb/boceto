@@ -1,10 +1,10 @@
-# NOIRE Perfumería — plantilla de tienda en línea
+# Boceto — plantilla de tienda en línea
 
-Plantilla completa y vendible de e-commerce para negocios locales (ropa,
-gorras, velas, joyería, cosmética, comida, perfumería, etc.). Este
-repositorio trae una tienda de demostración 100% funcional y con contenido
-ficticio realista (**NOIRE Perfumería**, Medellín, Colombia) para que se
-pueda mostrar como demo antes de venderla. Cada comprador clona este mismo
+Plantilla completa y vendible de e-commerce para negocios locales de
+cualquier giro. Este repositorio trae una tienda de demostración 100%
+funcional con contenido genérico de tienda (**Boceto**: productos, kits,
+ofertas, reseñas y recompensas de ejemplo) para que se pueda mostrar como
+demo antes de venderla. Cada comprador clona este mismo
 repositorio, crea su propio proyecto de Supabase, y reemplaza casi toda la
 información del negocio **desde el panel de administración**, sin tocar
 código.
@@ -27,12 +27,12 @@ con CSS.
 ```
 supabase/schema.sql        Modelo de datos completo, RLS, funciones y seed
 src/
-  config/catalog.ts        Slugs fijos de categorías y niveles (ver SETUP.md)
   lib/                      Cliente de Supabase, utilidades (WhatsApp, moneda,
                             subida/compresión de imágenes, CSV)
   types/                    Tipos TypeScript del modelo de datos
-  context/                  CartContext (carrito) y AuthContext (sesión admin)
-  hooks/                    Datos del sitio (site_settings, categorías, niveles…)
+  context/                  Carrito, sesión admin, datos del sitio (settings,
+                            categorías, niveles) y notificaciones (toasts)
+  hooks/                    Título de página, contadores animados, scroll…
   styles/theme.css          Variables de marca (color, tipografía, radios)
   components/               Header, Footer, tarjetas, carruseles, lightbox…
   layouts/                  PublicLayout y AdminLayout
@@ -70,17 +70,31 @@ Tablas principales: `site_settings`, `levels`, `categories`, `home_banner`,
 ## Qué es editable desde `/admin` y qué no
 
 **Casi todo** se edita desde el panel de administración sin tocar código:
-identidad del negocio, contacto, redes sociales, horario, categorías,
-niveles, banner de inicio, productos, reseñas, cupones, clientes y niveles
-de fidelidad.
+identidad del negocio, título de portada, barra de anuncios, moneda,
+contacto, redes sociales, horario, categorías (crear, editar y eliminar),
+niveles, banner de inicio, productos, pedidos, reseñas, cupones, clientes y
+niveles de fidelidad.
 
 Lo poco que **sí** requiere tocar código está marcado en el código fuente
 con el comentario `[MODIFICAR MANUAL]`, y todo está listado con su ruta
 exacta en [`SETUP.md`](./SETUP.md): credenciales de Supabase, SEO estático
-(`index.html`), variables de entorno en Cloudflare, la cantidad de
-categorías/niveles (`src/config/catalog.ts`), el color de acento
-(`theme.css`), el usuario administrador inicial (se crea desde el dashboard
+(`index.html`), variables de entorno en Cloudflare, el nombre del Worker
+(`wrangler.toml`), el color de acento (`theme.css`), el usuario administrador inicial (se crea desde el dashboard
 de Supabase) y el contenido de Términos y Privacidad.
+
+## Detalles incluidos
+
+- Catálogo con filtros por nivel, ordenamiento (destacados, recientes,
+  precio, nombre), búsqueda en vivo y páginas de categoría dinámicas.
+- Ficha de producto con galería y lightbox, variantes, stock visible,
+  porcentaje de descuento, productos relacionados y botón de compartir.
+- Carrito persistente, cupones, checkout en pasos con confirmación por
+  WhatsApp y referencia de pedido.
+- Tarjeta de recompensas digital con QR, progreso animado y reclamo de
+  recompensas.
+- Panel con ventas del mes, alertas de pendientes, pedidos recientes,
+  notificaciones (toasts) en cada acción y animaciones sutiles en todo el
+  sitio (respetando `prefers-reduced-motion`).
 
 ## Despliegue
 
