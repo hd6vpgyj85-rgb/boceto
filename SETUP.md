@@ -59,23 +59,25 @@ tocar código para eso**.
       ve — sin este paso el sitio publicado no va a conectar con tu base de
       datos.
 
-## 4. Categorías y niveles (cantidad fija en código)
+## 4. Categorías (cantidad fija en código) y niveles (100% desde el admin)
 
 - [ ] **☐ [MODIFICAR MANUAL] — `src/config/catalog.ts`**. El *nombre*,
-      *imagen* y *tagline* de cada categoría y nivel ya se editan desde
-      `/admin` sin tocar código. Pero la **cantidad** de categorías y
-      niveles, y sus slugs internos, están fijados aquí y en las rutas de
-      `src/App.tsx`. Si vas a usar las 3 categorías y los 3 niveles de
-      ejemplo (perfumería árabe/diseñador/nicho), no necesitas tocar nada:
-      solo edita sus nombres desde el admin. Si vas a agregar, quitar o
-      renombrar el *slug* de una categoría o nivel:
-      1. Edita `CATEGORY_SLUGS` o `LEVEL_SLUGS` en este archivo.
-      2. Si agregaste una categoría nueva, sus filas en Supabase no se crean
-         solas — insértala a mano en la tabla `categories` (o `levels`) desde
-         el Table Editor, con ese mismo slug.
+      *imagen* y *tagline* de cada categoría ya se editan desde `/admin` sin
+      tocar código. Pero la **cantidad** de categorías y sus slugs internos
+      están fijados aquí y en las rutas de `src/App.tsx` (necesario porque
+      cada categoría tiene su propia página en `/[categoria]`). Si vas a usar
+      las 3 categorías de ejemplo, no necesitas tocar nada. Si vas a agregar,
+      quitar o renombrar el *slug* de una categoría:
+      1. Edita `CATEGORY_SLUGS` en este archivo.
+      2. Inserta la fila correspondiente en la tabla `categories` de
+         Supabase con ese mismo slug (o hazlo desde el Table Editor).
       3. Las rutas de categoría se generan automáticamente desde
          `CATEGORY_SLUGS` en `src/App.tsx`, así que no hace falta tocar el
          router.
+- [ ] Los **niveles** (tabla `levels`) no tienen esta restricción: se pueden
+      crear, renombrar y eliminar libremente desde `/admin` → "Contenido de
+      inicio" → sección "Elige tu nivel", sin tocar código. El filtro de
+      niveles del catálogo y del buscador se actualiza automáticamente.
 
 ## 5. Identidad visual
 

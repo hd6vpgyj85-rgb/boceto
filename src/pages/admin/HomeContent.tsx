@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { uploadImage } from "../../lib/imageUpload";
+import { slugify } from "../../lib/format";
 import type { Level } from "../../types";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import "./adminShared.css";
@@ -12,6 +13,8 @@ export default function HomeContent() {
   const [loading, setLoading] = useState(true);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const [addingLevel, setAddingLevel] = useState(false);
+  const [newLevelLabel, setNewLevelLabel] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -78,6 +81,36 @@ export default function HomeContent() {
     flash(`Nivel "${level.label}" guardado`);
   };
 
+  const addLevel = async () => {
+    const label = newLevelLabel.trim();
+    if (!label) return;
+    let slug = slugify(label);
+    if (levels.some((l) => l.slug === slug)) slug = `${slug}-${Date.now().toString(36)}`;
+    const nextOrder = levels.length > 0 ? Math.max(...levels.map((l) => l.display_order)) + 1 : 1;
+
+    const { error } = await supabase
+      .from("levels")
+      .insert({ slug, label, image_url: null, tagline: null, display_order: nextOrder });
+
+    if (error) {
+      flash("No se pudo crear el nivel");
+      return;
+    }
+    setNewLevelLabel("");
+    setAddingLevel(false);
+    flash(`Nivel "${label}" creado`);
+    load();
+  };
+
+  const deleteLevel = async (level: Level) => {
+    if (!window.confirm(`¿Eliminar el nivel "${level.label}"? Los productos que lo tenían asignado dejarán de mostrarlo, pero no se borran.`)) {
+      return;
+    }
+    await supabase.from("levels").delete().eq("slug", level.slug);
+    flash(`Nivel "${level.label}" eliminado`);
+    load();
+  };
+
   if (loading) return <LoadingSpinner />;
 
   return (
@@ -118,7 +151,10 @@ export default function HomeContent() {
 
       <section className="home-content-section">
         <h2>Elige tu nivel</h2>
-        <p className="home-content-hint">Imagen y etiqueta de cada círculo en la página de inicio.</p>
+        <p className="home-content-hint">
+          Imagen y etiqueta de cada círculo en la página de inicio. Puedes agregar o eliminar niveles
+          completos — el filtro de niveles del catálogo y el buscador se actualiza solo.
+        </p>
         <div className="level-editor-row">
           {levels.map((level) => (
             <div key={level.slug} className="level-editor-item">
@@ -144,11 +180,56 @@ export default function HomeContent() {
                 value={level.tagline ?? ""}
                 onChange={(e) => updateLevelField(level.slug, "tagline", e.target.value)}
               />
-              <button type="button" className="btn btn-outline btn-sm" onClick={() => saveLevel(level)}>
-                Guardar
-              </button>
+              <div className="level-editor-actions">
+                <button type="button" className="btn btn-outline btn-sm" onClick={() => saveLevel(level)}>
+                  Guardar
+                </button>
+                <button type="button" className="btn btn-danger btn-sm" onClick={() => deleteLevel(level)}>
+                  Eliminar
+                </button>
+              </div>
             </div>
           ))}
+
+          {addingLevel ? (
+            <div className="level-editor-item level-editor-item-new">
+              <div className="level-editor-circle level-editor-circle-placeholder">
+                <GalleryIcon />
+              </div>
+              <input
+                className="level-editor-label-input"
+                placeholder="Nombre del nivel nuevo"
+                autoFocus
+                value={newLevelLabel}
+                onChange={(e) => setNewLevelLabel(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addLevel()}
+              />
+              <div className="level-editor-actions">
+                <button type="button" className="btn btn-primary btn-sm" onClick={addLevel}>
+                  Crear
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => {
+                    setAddingLevel(false);
+                    setNewLevelLabel("");
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="level-editor-add"
+              onClick={() => setAddingLevel(true)}
+              aria-label="Agregar nivel"
+            >
+              +
+            </button>
+          )}
         </div>
       </section>
     </div>
