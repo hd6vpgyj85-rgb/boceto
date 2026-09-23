@@ -32,13 +32,13 @@ create table if not exists site_settings (
   footer_note text not null default '',
   store_photo_url text,
   hero_title text not null default 'Todo lo que buscas, en un solo lugar',
-  announcement text not null default 'Envíos a todo el país · Pago seguro · Atención personalizada por WhatsApp',
+  announcement text not null default '',
   currency text not null default 'MXN',
   updated_at timestamptz not null default now()
 );
 alter table site_settings add column if not exists store_photo_url text;
 alter table site_settings add column if not exists hero_title text not null default 'Todo lo que buscas, en un solo lugar';
-alter table site_settings add column if not exists announcement text not null default 'Envíos a todo el país · Pago seguro · Atención personalizada por WhatsApp';
+alter table site_settings add column if not exists announcement text not null default '';
 alter table site_settings add column if not exists currency text not null default 'MXN';
 
 -- levels: niveles/colecciones (todo editable desde el admin).
@@ -667,7 +667,7 @@ select
   'Hecho con cariño para que vendas más. © 2026 Boceto.',
   'https://picsum.photos/seed/boceto-store/1600/900',
   'Todo lo que buscas, en un solo lugar',
-  'Envíos a todo el país · Pago seguro · Atención personalizada por WhatsApp',
+  '',
   'MXN'
 where not exists (select 1 from site_settings);
 

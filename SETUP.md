@@ -100,7 +100,7 @@ Todo esto se hace **desde `/admin`**, sin tocar código:
 
 - [ ] **Configuración del negocio** (ícono de engranaje en el header del
       admin, o `/admin/configuracion`): nombre, tagline, logo, título de la
-      portada, barra de anuncios, moneda, WhatsApp, teléfono, correo,
+      portada, moneda, WhatsApp, teléfono, correo,
       dirección, ciudad, horario, redes sociales, foto del local y nota del
       pie de página.
 - [ ] **Categorías** (`/admin/categorias`): crea, edita o elimina

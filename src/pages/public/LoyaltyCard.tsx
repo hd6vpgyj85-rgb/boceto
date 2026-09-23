@@ -7,7 +7,7 @@ import { buildWhatsAppUrl } from "../../lib/whatsapp";
 import type { Customer, LoyaltyTier } from "../../types";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import EmptyState from "../../components/EmptyState";
-import { ArrowLeftIcon, CheckIcon, GiftIcon } from "../../components/Icons";
+import { ArrowLeftIcon, CheckIcon, GiftIcon, WhatsAppIcon } from "../../components/Icons";
 import "./LoyaltyCard.css";
 
 interface ClaimInfo {
@@ -26,6 +26,7 @@ export default function LoyaltyCard() {
   const [claims, setClaims] = useState<ClaimInfo[]>([]);
   const [flipped, setFlipped] = useState(false);
   const [claimingTier, setClaimingTier] = useState<string | null>(null);
+  const [claimLink, setClaimLink] = useState<{ tierId: string; url: string } | null>(null);
   const [progressReady, setProgressReady] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const touchStartX = useRef<number | null>(null);
@@ -100,21 +101,17 @@ export default function LoyaltyCard() {
 
   const handleClaim = async (tier: LoyaltyTier) => {
     if (!token || !settings) return;
-    const popup = window.open("", "_blank");
     setClaimingTier(tier.id);
     const { data } = await supabase.rpc("request_loyalty_claim", { p_token: token, p_tier_id: tier.id });
     await load();
     setClaimingTier(null);
     if (!(data as { success?: boolean } | null)?.success) {
-      popup?.close();
       toast("No pudimos registrar tu solicitud. Inténtalo de nuevo.", "error");
       return;
     }
-    toast("¡Solicitud enviada! Te confirmamos por WhatsApp.", "success");
+    toast("¡Solicitud registrada! Avísanos por WhatsApp para entregártela.", "success");
     const message = `¡Hola, ${businessName}! Soy ${customer.name} (código ${customer.access_code}). Quiero reclamar mi recompensa: ${tier.reward_description}.`;
-    const url = buildWhatsAppUrl(settings.whatsapp, message);
-    if (popup) popup.location.href = url;
-    else window.location.href = url;
+    setClaimLink({ tierId: tier.id, url: buildWhatsAppUrl(settings.whatsapp, message) });
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -248,6 +245,16 @@ export default function LoyaltyCard() {
               </div>
               {state === "claimed" ? (
                 <span className="loyalty-reward-status is-claimed">Reclamado</span>
+              ) : state === "requested" && claimLink?.tierId === tier.id ? (
+                <a
+                  href={claimLink.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-whatsapp btn-sm loyalty-claim-wa"
+                >
+                  <WhatsAppIcon size={15} />
+                  Avisar
+                </a>
               ) : state === "requested" ? (
                 <span className="loyalty-reward-status is-requested">En revisión</span>
               ) : state === "unlocked" ? (

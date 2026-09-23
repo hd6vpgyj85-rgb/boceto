@@ -131,7 +131,6 @@ export default function Checkout() {
     if (!settings) return;
     setSubmitting(true);
     setError(null);
-    const popup = window.open("", "_blank");
 
     try {
       const cleanPhone = phone.replace(/\D/g, "");
@@ -210,13 +209,11 @@ export default function Checkout() {
         .join("\n");
 
       const whatsappUrl = buildWhatsAppUrl(settings.whatsapp, message);
-      if (popup) popup.location.href = whatsappUrl;
 
       setPlaced({ ref, token, lines: [...lines], total, whatsappUrl });
       clearCart();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
-      popup?.close();
       setError("No pudimos registrar tu pedido. Revisa tu conexión e inténtalo de nuevo, o escríbenos por WhatsApp.");
     } finally {
       setSubmitting(false);
@@ -453,10 +450,6 @@ export default function Checkout() {
               <span>-{formatCurrency(discount)}</span>
             </div>
           )}
-          <div className="checkout-summary-row checkout-summary-muted">
-            <span>Envío</span>
-            <span>Por coordinar</span>
-          </div>
           <div className="checkout-summary-row checkout-total-row">
             <span>Total</span>
             <span key={total} className="checkout-total-amount">
@@ -468,7 +461,7 @@ export default function Checkout() {
 
           <button type="submit" className={`btn btn-whatsapp btn-block checkout-submit ${submitting ? "btn-loading" : ""}`} disabled={submitting}>
             {!submitting && <WhatsAppIcon size={20} />}
-            {submitting ? "Enviando pedido…" : "Confirmar por WhatsApp"}
+            {submitting ? "Registrando pedido…" : "Confirmar pedido"}
           </button>
           <p className="checkout-secure">
             <ShieldIcon size={14} /> No cobramos nada todavía: confirmas pago y entrega por WhatsApp.
@@ -480,7 +473,8 @@ export default function Checkout() {
 }
 
 function CheckoutSuccess({ order }: { order: PlacedOrder }) {
-  usePageTitle("¡Pedido enviado!");
+  usePageTitle("¡Pedido registrado!");
+  const [opened, setOpened] = useState(false);
   const cardUrl = order.token ? `${window.location.origin}/fidelidad/${order.token}` : null;
   const qrSrc = cardUrl
     ? `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(cardUrl)}`
@@ -495,16 +489,22 @@ function CheckoutSuccess({ order }: { order: PlacedOrder }) {
         </svg>
       </div>
       <span className="checkout-success-ref">Pedido #{order.ref}</span>
-      <h1>¡Pedido enviado!</h1>
+      <h1>¡Pedido registrado!</h1>
       <p>
-        Abrimos WhatsApp con el resumen de tu pedido. Envía el mensaje para que confirmemos el pago y la entrega. Si no
-        se abrió, usa el botón de abajo.
+        Último paso: envíanos el resumen por WhatsApp para confirmar el pago y la entrega. El mensaje ya está escrito,
+        solo tienes que enviarlo.
       </p>
 
       <div className="checkout-success-actions">
-        <a href={order.whatsappUrl} target="_blank" rel="noreferrer" className="btn btn-whatsapp">
+        <a
+          href={order.whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`btn btn-whatsapp checkout-success-wa ${opened ? "" : "is-pending"}`}
+          onClick={() => setOpened(true)}
+        >
           <WhatsAppIcon size={18} />
-          Abrir WhatsApp de nuevo
+          {opened ? "Abrir WhatsApp de nuevo" : "Enviar pedido por WhatsApp"}
         </a>
         <Link to="/productos" className="btn btn-outline">
           Seguir comprando

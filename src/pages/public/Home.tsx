@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 import { useSiteSettings, useHomeBanner, useLevels, useCategories, usePageTitle } from "../../hooks/useSiteData";
-import { useCountUp } from "../../hooks/useCountUp";
 import type { LoyaltyTier, Product, Review } from "../../types";
 import { buildWhatsAppUrl } from "../../lib/whatsapp";
 import StarRating from "../../components/StarRating";
@@ -24,7 +23,6 @@ import {
   ReturnIcon,
   ShieldIcon,
   SparkIcon,
-  TruckIcon,
   WhatsAppIcon,
 } from "../../components/Icons";
 import "./Home.css";
@@ -32,7 +30,6 @@ import "./Home.css";
 const DEFAULT_HERO_TITLE = "Todo lo que buscas, en un solo lugar";
 
 const BENEFITS = [
-  { icon: TruckIcon, label: "Envíos a todo el país" },
   { icon: ShieldIcon, label: "Compra 100% segura" },
   { icon: ChatIcon, label: "Atención personalizada por WhatsApp" },
   { icon: CashIcon, label: "Paga al recibir o por transferencia" },
@@ -68,8 +65,6 @@ export default function Home() {
   const [newest, setNewest] = useState<Product[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [tiers, setTiers] = useState<LoyaltyTier[]>([]);
-  const [productCount, setProductCount] = useState(0);
-  const [statsReady, setStatsReady] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -77,21 +72,15 @@ export default function Home() {
       supabase.from("products").select("*").order("created_at", { ascending: false }).limit(10),
       supabase.from("reviews").select("*").eq("status", "approved").order("created_at", { ascending: false }).limit(8),
       supabase.from("loyalty_tiers").select("*").order("required_purchases", { ascending: true }),
-      supabase.from("products").select("id", { count: "exact", head: true }).gt("stock", 0),
-    ]).then(([featuredRes, newestRes, reviewsRes, tiersRes, countRes]) => {
+    ]).then(([featuredRes, newestRes, reviewsRes, tiersRes]) => {
       setFeatured((featuredRes.data as Product[] | null) ?? []);
       setNewest((newestRes.data as Product[] | null) ?? []);
       setReviews((reviewsRes.data as Review[] | null) ?? []);
       setTiers((tiersRes.data as LoyaltyTier[] | null) ?? []);
-      setProductCount(countRes.count ?? 0);
-      setStatsReady(true);
     });
   }, []);
 
   const avgRating = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 5;
-  const productsCounter = useCountUp(productCount, 1400, statsReady);
-  const reviewsCounter = useCountUp(reviews.length, 1400, statsReady);
-  const ratingCounter = useCountUp(Math.round(avgRating * 10), 1400, statsReady);
 
   const heroImage = banner?.images?.[0];
   const businessName = settings?.business_name ?? "";
@@ -112,7 +101,7 @@ export default function Home() {
         <div className="container hero-content">
           <span className="hero-pill">
             <SparkIcon size={14} />
-            Tienda en línea · Envíos a todo el país
+            Tienda en línea
           </span>
           <h1 className="hero-title">
             {(settings?.hero_title || DEFAULT_HERO_TITLE).split(" ").map((word, i) => (
@@ -132,24 +121,6 @@ export default function Home() {
               Escríbenos
             </a>
           </div>
-
-          <dl className="hero-stats">
-            <div className="hero-stat">
-              <dt>Productos disponibles</dt>
-              <dd>{productsCounter}</dd>
-            </div>
-            <div className="hero-stat">
-              <dt>Calificación promedio</dt>
-              <dd>
-                {(ratingCounter / 10).toFixed(1)}
-                <StarRating rating={avgRating} size={13} />
-              </dd>
-            </div>
-            <div className="hero-stat">
-              <dt>Reseñas de clientes</dt>
-              <dd>{reviewsCounter}</dd>
-            </div>
-          </dl>
         </div>
 
         <a href="#home-benefits" className="hero-scroll" aria-label="Seguir bajando">

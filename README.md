@@ -70,7 +70,7 @@ Tablas principales: `site_settings`, `levels`, `categories`, `home_banner`,
 ## Qué es editable desde `/admin` y qué no
 
 **Casi todo** se edita desde el panel de administración sin tocar código:
-identidad del negocio, título de portada, barra de anuncios, moneda,
+identidad del negocio, título de portada, moneda,
 contacto, redes sociales, horario, categorías (crear, editar y eliminar),
 niveles, banner de inicio, productos, pedidos, reseñas, cupones, clientes y
 niveles de fidelidad.
