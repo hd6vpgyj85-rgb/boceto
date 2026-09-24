@@ -96,12 +96,14 @@ p {
 }
 
 .section {
-  padding: 72px 0;
+  padding-top: 72px;
+  padding-bottom: 72px;
 }
 
 @media (max-width: 640px) {
   .section {
-    padding: 44px 0;
+    padding-top: 44px;
+    padding-bottom: 44px;
   }
 }
 
@@ -446,6 +448,14 @@ p {
 
 .chip-row::-webkit-scrollbar {
   display: none;
+}
+
+@media (max-width: 640px) {
+  .chip-row {
+    flex-wrap: wrap;
+    overflow: visible;
+    gap: 8px;
+  }
 }
 
 .chip {

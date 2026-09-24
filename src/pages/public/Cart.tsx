@@ -6,7 +6,7 @@ import { formatCurrency } from "../../lib/format";
 import QuantityStepper from "../../components/QuantityStepper";
 import EmptyState from "../../components/EmptyState";
 import SmartImage from "../../components/SmartImage";
-import { ArrowRightIcon, CloseIcon, GiftIcon, ShieldIcon, TruckIcon } from "../../components/Icons";
+import { ArrowRightIcon, ChatIcon, CloseIcon, GiftIcon, ShieldIcon } from "../../components/Icons";
 import "./Cart.css";
 
 export default function Cart() {
@@ -117,10 +117,6 @@ export default function Cart() {
             </span>
             <span>{formatCurrency(subtotal)}</span>
           </div>
-          <div className="cart-summary-row cart-summary-muted">
-            <span>Envío</span>
-            <span>Se coordina por WhatsApp</span>
-          </div>
           <div className="cart-summary-row cart-summary-total">
             <span>Subtotal</span>
             <span key={subtotal} className="cart-summary-amount">
@@ -143,7 +139,7 @@ export default function Cart() {
               <ShieldIcon size={16} /> Compra segura
             </li>
             <li>
-              <TruckIcon size={16} /> Envíos a todo el país
+              <ChatIcon size={16} /> Atención por WhatsApp
             </li>
           </ul>
         </aside>

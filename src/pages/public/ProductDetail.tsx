@@ -19,7 +19,7 @@ import {
   ChatIcon,
   ShareIcon,
   ShieldIcon,
-  TruckIcon,
+  GiftIcon,
   WhatsAppIcon,
 } from "../../components/Icons";
 import "./ProductDetail.css";
@@ -266,7 +266,7 @@ export default function ProductDetail() {
               ? "Agotado por ahora"
               : lowStock
                 ? `¡Solo quedan ${product.stock} unidad${product.stock === 1 ? "" : "es"}!`
-                : "Disponible para envío inmediato"}
+                : "Disponible"}
           </p>
 
           {product.sizes.length > 0 && (
@@ -331,10 +331,10 @@ export default function ProductDetail() {
 
           <ul className="product-detail-trust">
             <li>
-              <TruckIcon size={20} />
+              <GiftIcon size={20} />
               <span>
-                <strong>Envío a todo el país</strong>
-                Coordinamos la entrega contigo por WhatsApp.
+                <strong>Recompensas en cada compra</strong>
+                Acumula compras y desbloquea descuentos.
               </span>
             </li>
             <li>

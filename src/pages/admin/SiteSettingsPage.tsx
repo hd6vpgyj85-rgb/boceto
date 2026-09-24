@@ -113,8 +113,7 @@ export default function SiteSettingsPage() {
         <h1 className="admin-page-title">Configuración del negocio</h1>
       </div>
       <p className="admin-page-hint">
-        Todo lo que cambies aquí se refleja al instante en la tienda: nombre, contacto, moneda, barra de anuncios y
-        textos principales.
+        Todo lo que cambies aquí se refleja al instante en la tienda: nombre, contacto, moneda y textos principales.
       </p>
 
       <form onSubmit={handleSubmit} className="settings-form">
@@ -155,11 +154,6 @@ export default function SiteSettingsPage() {
             <div className="field field-full">
               <label>Título principal de la portada</label>
               <input value={settings.hero_title} onChange={(e) => update("hero_title", e.target.value)} placeholder="Todo lo que buscas, en un solo lugar" />
-            </div>
-            <div className="field field-full">
-              <label>Barra de anuncios</label>
-              <span className="field-hint">Separa varios mensajes con « · ». Déjalo vacío para ocultar la barra.</span>
-              <input value={settings.announcement} onChange={(e) => update("announcement", e.target.value)} placeholder="Envíos a todo el país · Pago seguro" />
             </div>
             <div className="field">
               <label>Moneda</label>

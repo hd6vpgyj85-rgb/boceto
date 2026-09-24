@@ -427,3 +427,21 @@
 .loyalty-reward-status.is-requested {
   color: var(--color-star);
 }
+
+.loyalty-claim-wa {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  animation: pop 360ms var(--ease-out), checkout-wa-pulse 1.8s ease-in-out 400ms infinite;
+}
+
+@keyframes checkout-wa-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+  }
+}

@@ -3,7 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { useSiteSettings, useCategories } from "../hooks/useSiteData";
 import { useCart } from "../context/CartContext";
 import { useScrolledPast } from "../hooks/useScrollY";
-import { BagIcon, CloseIcon, SearchIcon, UserIcon } from "./Icons";
+import { BagIcon, SearchIcon, UserIcon } from "./Icons";
 import "./Header.css";
 
 export default function Header() {
@@ -11,7 +11,6 @@ export default function Header() {
   const { categories } = useCategories();
   const { itemCount, lastAdded } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [announcementHidden, setAnnouncementHidden] = useState(false);
   const scrolled = useScrolledPast(8);
   const location = useLocation();
 
@@ -30,7 +29,6 @@ export default function Header() {
     };
   }, [menuOpen]);
 
-  const announcement = settings?.announcement?.trim();
   const navLinks = [
     { to: "/", label: "Inicio", end: true },
     ...categories.map((c) => ({ to: `/${c.slug}`, label: c.name, end: false })),
@@ -39,20 +37,6 @@ export default function Header() {
 
   return (
     <>
-      {announcement && !announcementHidden && (
-        <div className="announcement-bar">
-          <p className="announcement-text">{announcement}</p>
-          <button
-            type="button"
-            className="announcement-close"
-            onClick={() => setAnnouncementHidden(true)}
-            aria-label="Ocultar aviso"
-          >
-            <CloseIcon size={14} />
-          </button>
-        </div>
-      )}
-
       <header className={`site-header ${scrolled ? "is-scrolled" : ""} ${menuOpen ? "is-menu-open" : ""}`}>
         <div className="container site-header-inner">
           <Link to="/" className="site-logo" aria-label="Ir al inicio">

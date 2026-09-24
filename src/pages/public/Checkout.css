@@ -618,19 +618,19 @@
   padding: 5px 12px;
   border-radius: var(--radius-full);
   border: 1px solid rgba(var(--color-accent-rgb), 0.35);
-  animation: fade-up 500ms var(--ease-out) 900ms backwards;
+  animation: fade-up 500ms var(--ease-out) 350ms backwards;
 }
 
 .checkout-success h1 {
   font-size: clamp(2.2rem, 6vw, 3.4rem);
   text-transform: uppercase;
-  animation: fade-up 500ms var(--ease-out) 1000ms backwards;
+  animation: fade-up 500ms var(--ease-out) 420ms backwards;
 }
 
 .checkout-success > p {
   color: var(--color-text-muted);
   max-width: 52ch;
-  animation: fade-up 500ms var(--ease-out) 1080ms backwards;
+  animation: fade-up 500ms var(--ease-out) 480ms backwards;
 }
 
 .checkout-success-actions {
@@ -639,7 +639,7 @@
   justify-content: center;
   gap: 12px;
   margin-top: 6px;
-  animation: fade-up 500ms var(--ease-out) 1160ms backwards;
+  animation: fade-up 500ms var(--ease-out) 540ms backwards;
 }
 
 .checkout-success-loyalty {
@@ -650,7 +650,7 @@
   padding: 24px;
   max-width: 560px;
   text-align: left;
-  animation: fade-up 600ms var(--ease-out) 1300ms backwards;
+  animation: fade-up 600ms var(--ease-out) 700ms backwards;
 }
 
 .checkout-success-loyalty h2 {
@@ -701,5 +701,56 @@
   .checkout-success-loyalty {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+.checkout-success-wa {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkout-success-wa.is-pending {
+  animation: checkout-wa-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes checkout-wa-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(37, 211, 102, 0);
+  }
+}
+
+@media (max-width: 520px) {
+  .checkout-success-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .checkout-success-wa {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .checkout-steps {
+    gap: 6px;
+    font-size: 0.72rem;
+  }
+
+  .checkout-steps li {
+    gap: 6px;
+  }
+
+  .checkout-steps li:not(:last-child)::after {
+    width: 14px;
+  }
+
+  .checkout-steps li span {
+    width: 22px;
+    height: 22px;
   }
 }
