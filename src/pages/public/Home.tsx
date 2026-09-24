@@ -22,7 +22,6 @@ import {
   MapPinIcon,
   ReturnIcon,
   ShieldIcon,
-  SparkIcon,
   WhatsAppIcon,
 } from "../../components/Icons";
 import "./Home.css";
@@ -99,10 +98,6 @@ export default function Home() {
         <div className="hero-orb hero-orb-2" aria-hidden="true" />
 
         <div className="container hero-content">
-          <span className="hero-pill">
-            <SparkIcon size={14} />
-            Tienda en línea
-          </span>
           <h1 className="hero-title">
             {(settings?.hero_title || DEFAULT_HERO_TITLE).split(" ").map((word, i) => (
               <span key={i} className="hero-word" style={{ animationDelay: `${180 + i * 70}ms` }}>
