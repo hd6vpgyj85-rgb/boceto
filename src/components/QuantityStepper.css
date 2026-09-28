@@ -1,103 +1,35 @@
 .qty-stepper {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-pill);
   overflow: hidden;
-  background: var(--color-bg);
-  transition: border-color var(--transition-fast) var(--ease-out);
-}
-
-.qty-stepper:hover {
-  border-color: rgba(var(--color-accent-rgb), 0.45);
 }
 
 .qty-stepper button {
   width: 36px;
   height: 36px;
+  border: none;
+  background: var(--color-bg-soft);
+  font-size: 1.1rem;
+  color: var(--color-primary-dark);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text);
-  transition:
-    background var(--transition-fast) var(--ease-out),
-    color var(--transition-fast) var(--ease-out);
-}
-
-.qty-stepper-md button {
-  width: 46px;
-  height: 46px;
+  transition: background var(--transition);
 }
 
 .qty-stepper button:hover:not(:disabled) {
-  background: rgba(var(--color-accent-rgb), 0.14);
-  color: var(--color-accent);
+  background: var(--color-primary-light);
 }
 
 .qty-stepper button:disabled {
-  opacity: 0.3;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-.qty-stepper button:active:not(:disabled) > * {
-  transform: scale(0.75);
-}
-
-.qty-stepper button > * {
-  transition: transform var(--transition-fast) var(--ease-out);
-}
-
-.qty-stepper-minus {
-  display: block;
-  width: 12px;
-  height: 2.4px;
-  border-radius: 2px;
-  background: currentColor;
-}
-
-.qty-stepper-value {
-  position: relative;
-  min-width: 34px;
-  height: 24px;
-  overflow: hidden;
+.qty-stepper span {
+  min-width: 36px;
   text-align: center;
-  font-weight: 700;
-  font-size: 0.92rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.qty-stepper-number {
-  position: absolute;
-  inset: 0;
-  line-height: 24px;
-}
-
-.qty-up {
-  animation: qty-from-below 260ms var(--ease-out);
-}
-
-.qty-down {
-  animation: qty-from-above 260ms var(--ease-out);
-}
-
-@keyframes qty-from-below {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
-}
-
-@keyframes qty-from-above {
-  from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
+  font-weight: 600;
 }

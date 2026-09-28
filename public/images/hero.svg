@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8a2647"/>
+      <stop offset="100%" stop-color="#e0668c"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#g)"/>
+  <circle cx="1250" cy="230" r="340" fill="#ffffff" opacity="0.06"/>
+  <circle cx="220" cy="850" r="260" fill="#ffffff" opacity="0.06"/>
+  <text x="800" y="960" font-family="Helvetica, Arial, sans-serif" font-size="20" fill="#ffffff" opacity="0.35" text-anchor="middle">Reemplaza con una foto real de tu tienda — /public/images/hero.svg</text>
+</svg>

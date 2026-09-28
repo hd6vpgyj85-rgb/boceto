@@ -1,78 +1,118 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
-import { SiteDataProvider } from "./context/SiteDataContext";
-import { ToastProvider } from "./context/ToastContext";
+import { CartProvider } from "./context/CartContext";
+import { ProductsProvider } from "./context/ProductsContext";
+import { OrdersProvider } from "./context/OrdersContext";
+import { ReviewsProvider } from "./context/ReviewsContext";
+import { AnalyticsProvider } from "./context/AnalyticsContext";
+import { CouponsProvider } from "./context/CouponsContext";
+import { CustomersProvider } from "./context/CustomersContext";
+import { LoyaltyProvider } from "./context/LoyaltyContext";
 
-import PublicLayout from "./layouts/PublicLayout";
+import ScrollToTop from "./components/ScrollToTop";
+
+import HomeLayout from "./layouts/HomeLayout";
+import CategoryLayout from "./layouts/CategoryLayout";
+import SearchLayout from "./layouts/SearchLayout";
 import AdminLayout from "./layouts/AdminLayout";
 
-import Home from "./pages/public/Home";
-import ProductListing from "./pages/public/ProductListing";
+import HomePage from "./pages/public/HomePage";
 import CategoryPage from "./pages/public/CategoryPage";
-import ProductDetail from "./pages/public/ProductDetail";
-import Cart from "./pages/public/Cart";
-import Checkout from "./pages/public/Checkout";
-import Search from "./pages/public/Search";
-import LoyaltyCard from "./pages/public/LoyaltyCard";
-import Login from "./pages/public/Login";
-import Terms from "./pages/public/Terms";
-import Privacy from "./pages/public/Privacy";
-import NotFound from "./pages/public/NotFound";
+import OfertasPage from "./pages/public/OfertasPage";
+import SearchPage from "./pages/public/SearchPage";
+import ProductDetailPage from "./pages/public/ProductDetailPage";
+import CartPage from "./pages/public/CartPage";
+import CheckoutPage from "./pages/public/CheckoutPage";
+import FidelidadPage from "./pages/public/FidelidadPage";
+import TerminosPage from "./pages/public/TerminosPage";
+import PrivacidadPage from "./pages/public/PrivacidadPage";
+import NotFoundPage from "./pages/public/NotFoundPage";
 
-import Dashboard from "./pages/admin/Dashboard";
-import Products from "./pages/admin/Products";
+import LoginPage from "./pages/admin/LoginPage";
+import DashboardPage from "./pages/admin/DashboardPage";
+import ProductsPage from "./pages/admin/ProductsPage";
 import ProductFormPage from "./pages/admin/ProductFormPage";
-import Categories from "./pages/admin/Categories";
-import Orders from "./pages/admin/Orders";
-import Reviews from "./pages/admin/Reviews";
-import Coupons from "./pages/admin/Coupons";
-import Customers from "./pages/admin/Customers";
-import HomeContent from "./pages/admin/HomeContent";
-import SiteSettingsPage from "./pages/admin/SiteSettingsPage";
+const ProductImportPage = lazy(() => import("./pages/admin/ProductImportPage"));
+import CategoriesPage from "./pages/admin/CategoriesPage";
+import OrdersPage from "./pages/admin/OrdersPage";
+import OrdersArchivePage from "./pages/admin/OrdersArchivePage";
+import ReviewsPage from "./pages/admin/ReviewsPage";
+import CouponsPage from "./pages/admin/CouponsPage";
+import NewCouponPage from "./pages/admin/NewCouponPage";
+import CustomersPage from "./pages/admin/CustomersPage";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <SiteDataProvider>
-          <ToastProvider>
-            <CartProvider>
-              <Routes>
-                <Route element={<PublicLayout />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/productos" element={<ProductListing mode="all" />} />
-                  <Route path="/ofertas" element={<ProductListing mode="offers" />} />
-                  <Route path="/producto/:id" element={<ProductDetail />} />
-                  <Route path="/carrito" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/buscar" element={<Search />} />
-                  <Route path="/terminos" element={<Terms />} />
-                  <Route path="/privacidad" element={<Privacy />} />
-                  <Route path="/:categorySlug" element={<CategoryPage />} />
-                  <Route path="*" element={<NotFound />} />
-                </Route>
+        <ProductsProvider>
+          <OrdersProvider>
+            <ReviewsProvider>
+              <AnalyticsProvider>
+                <CouponsProvider>
+                  <CustomersProvider>
+                    <LoyaltyProvider>
+                      <CartProvider>
+                        <ScrollToTop />
+                        <Routes>
+                          <Route element={<HomeLayout />}>
+                            <Route path="/" element={<HomePage />} />
+                          </Route>
 
-                <Route path="/admin/login" element={<Login />} />
-                <Route path="/fidelidad/:token" element={<LoyaltyCard />} />
+                          <Route element={<CategoryLayout />}>
+                            <Route path="/fajas" element={<CategoryPage category="fajas" />} />
+                            <Route path="/ropa" element={<CategoryPage category="ropa" />} />
+                            <Route path="/bolsas" element={<CategoryPage category="bolsas" />} />
+                            <Route path="/perfumes" element={<CategoryPage category="perfumes" />} />
+                            <Route path="/accesorios" element={<CategoryPage category="accesorios" />} />
+                            <Route path="/ofertas" element={<OfertasPage />} />
+                            <Route path="/producto/:id" element={<ProductDetailPage />} />
+                            <Route path="/carrito" element={<CartPage />} />
+                            <Route path="/checkout" element={<CheckoutPage />} />
+                            <Route path="/terminos" element={<TerminosPage />} />
+                            <Route path="/privacidad" element={<PrivacidadPage />} />
+                            <Route path="*" element={<NotFoundPage />} />
+                          </Route>
 
-                <Route path="/admin" element={<AdminLayout />}>
-                  <Route index element={<Dashboard />} />
-                  <Route path="productos" element={<Products />} />
-                  <Route path="productos/nuevo" element={<ProductFormPage />} />
-                  <Route path="productos/:id" element={<ProductFormPage />} />
-                  <Route path="categorias" element={<Categories />} />
-                  <Route path="pedidos" element={<Orders />} />
-                  <Route path="resenas" element={<Reviews />} />
-                  <Route path="cupones" element={<Coupons />} />
-                  <Route path="clientes" element={<Customers />} />
-                  <Route path="contenido-inicio" element={<HomeContent />} />
-                  <Route path="configuracion" element={<SiteSettingsPage />} />
-                </Route>
-              </Routes>
-            </CartProvider>
-          </ToastProvider>
-        </SiteDataProvider>
+                          <Route element={<SearchLayout />}>
+                            <Route path="/buscar" element={<SearchPage />} />
+                          </Route>
+
+                          <Route path="/fidelidad/:token" element={<FidelidadPage />} />
+
+                          <Route path="/admin/login" element={<LoginPage />} />
+                          <Route path="/admin" element={<AdminLayout />}>
+                            <Route index element={<DashboardPage />} />
+                            <Route path="productos" element={<ProductsPage />} />
+                            <Route path="productos/nuevo" element={<ProductFormPage />} />
+                            <Route
+                              path="productos/importar"
+                              element={
+                                <Suspense fallback={<LoadingSpinner />}>
+                                  <ProductImportPage />
+                                </Suspense>
+                              }
+                            />
+                            <Route path="productos/:id" element={<ProductFormPage />} />
+                            <Route path="categorias" element={<CategoriesPage />} />
+                            <Route path="pedidos" element={<OrdersPage />} />
+                            <Route path="pedidos/baul" element={<OrdersArchivePage />} />
+                            <Route path="resenas" element={<ReviewsPage />} />
+                            <Route path="cupones" element={<CouponsPage />} />
+                            <Route path="cupones/nuevo" element={<NewCouponPage />} />
+                            <Route path="clientes" element={<CustomersPage />} />
+                          </Route>
+                        </Routes>
+                      </CartProvider>
+                    </LoyaltyProvider>
+                  </CustomersProvider>
+                </CouponsProvider>
+              </AnalyticsProvider>
+            </ReviewsProvider>
+          </OrdersProvider>
+        </ProductsProvider>
       </AuthProvider>
     </BrowserRouter>
   );

@@ -1,0 +1,17 @@
+.product-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.product-price-old {
+  font-weight: 500;
+  font-size: 0.85em;
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+.product-price-sale {
+  color: var(--color-primary-dark);
+}

@@ -1,0 +1,143 @@
+.checkout-page {
+  padding: 32px 20px 60px;
+  max-width: 640px;
+}
+
+.checkout-page h1 {
+  font-size: 1.7rem;
+  margin-bottom: 24px;
+}
+
+.checkout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.checkout-form section h2 {
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+.checkout-form input,
+.checkout-form select,
+.checkout-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  font-family: inherit;
+  font-size: 0.92rem;
+  margin-bottom: 10px;
+}
+
+.checkout-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.checkout-form input:focus,
+.checkout-form select:focus,
+.checkout-form textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.checkout-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.checkout-coupon-ok {
+  color: var(--color-accent-dark);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.checkout-coupon-error {
+  color: #b3261e;
+  font-size: 0.85rem;
+}
+
+.checkout-review-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.checkout-review-fields {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkout-summary {
+  background: var(--color-bg-soft);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkout-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+.checkout-summary-total {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--color-primary-dark);
+  border-top: 1px solid var(--color-border);
+  padding-top: 8px;
+}
+
+.checkout-error {
+  color: #b3261e;
+  text-align: center;
+}
+
+.checkout-success {
+  padding: 70px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 480px;
+}
+
+.checkout-success h1 {
+  font-size: 1.6rem;
+}
+
+.loyalty-mini-card {
+  background: var(--color-bg-soft);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.loyalty-mini-card img {
+  width: 180px;
+  height: 180px;
+  border-radius: var(--radius-sm);
+}
+
+.loyalty-mini-card p {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.checkout-success-actions {
+  display: flex;
+  gap: 12px;
+}

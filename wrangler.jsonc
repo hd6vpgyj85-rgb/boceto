@@ -1,0 +1,19 @@
+{
+  // [MODIFICAR MANUAL] Nombre del Worker: debe coincidir con el nombre del
+  // proyecto creado en el dashboard de Cloudflare (Workers & Pages). Este
+  // repositorio ya está conectado a un Worker existente llamado
+  // "websiteboceto" — si lo renombras aquí sin renombrar también el
+  // proyecto en Cloudflare, Workers Builds falla.
+  "name": "websiteboceto",
+  "compatibility_date": "2024-12-01",
+  // Genera dist/ automáticamente antes de "wrangler deploy". Esto hace el
+  // deploy robusto aunque el "Build command" del dashboard de Cloudflare
+  // esté vacío o no se haya configurado.
+  "build": {
+    "command": "npm install && npm run build"
+  },
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}

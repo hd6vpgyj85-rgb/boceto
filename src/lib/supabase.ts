@@ -1,16 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 
-// [MODIFICAR MANUAL] Credenciales de Supabase: se leen de variables de entorno
-// (ver .env.example). Crea tu propio proyecto en supabase.com, corre
-// supabase/schema.sql en el SQL Editor, y pega aquí tu URL y anon key a través
-// de un archivo ".env" local y de las variables de Cloudflare Workers en producción.
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const url = import.meta.env.VITE_SUPABASE_URL;
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error(
-    "Faltan las variables VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY. Copia .env.example a .env y complétalas.",
+if (!url || !anonKey) {
+  console.warn(
+    "Faltan las variables VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY. Revisa tu archivo .env.local."
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(url || "https://placeholder.supabase.co", anonKey || "public-anon-key");

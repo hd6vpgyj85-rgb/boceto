@@ -1,45 +1,31 @@
-import { useState } from "react";
-import { PlusIcon } from "./Icons";
 import "./QuantityStepper.css";
 
 interface QuantityStepperProps {
-  value: number;
-  onChange: (value: number) => void;
+  quantity: number;
   min?: number;
   max?: number;
-  size?: "sm" | "md";
+  onChange: (quantity: number) => void;
 }
 
-export default function QuantityStepper({ value, onChange, min = 1, max = 99, size = "sm" }: QuantityStepperProps) {
-  const [previous, setPrevious] = useState(value);
-  const [direction, setDirection] = useState<"up" | "down">("up");
-  if (value !== previous) {
-    setDirection(value > previous ? "up" : "down");
-    setPrevious(value);
-  }
-
+export default function QuantityStepper({ quantity, min = 1, max = 99, onChange }: QuantityStepperProps) {
   return (
-    <div className={`qty-stepper qty-stepper-${size}`}>
+    <div className="qty-stepper">
       <button
         type="button"
-        onClick={() => onChange(Math.max(min, value - 1))}
-        disabled={value <= min}
+        onClick={() => onChange(Math.max(min, quantity - 1))}
+        disabled={quantity <= min}
         aria-label="Disminuir cantidad"
       >
-        <span className="qty-stepper-minus" />
+        −
       </button>
-      <span className="qty-stepper-value" aria-live="polite">
-        <span key={value} className={`qty-stepper-number qty-${direction}`}>
-          {value}
-        </span>
-      </span>
+      <span>{quantity}</span>
       <button
         type="button"
-        onClick={() => onChange(Math.min(max, value + 1))}
-        disabled={value >= max}
+        onClick={() => onChange(Math.min(max, quantity + 1))}
+        disabled={quantity >= max}
         aria-label="Aumentar cantidad"
       >
-        <PlusIcon size={14} strokeWidth={2.6} />
+        +
       </button>
     </div>
   );

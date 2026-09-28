@@ -1,0 +1,29 @@
+.search-page {
+  padding: 32px 20px 20px;
+}
+
+.search-page h1 {
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-page input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-border);
+  font-size: 1rem;
+  margin-bottom: 24px;
+}
+
+.search-page input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.search-hint {
+  text-align: center;
+  color: var(--color-muted);
+  padding: 40px 0;
+}

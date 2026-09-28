@@ -1,0 +1,19 @@
+.category-hero {
+  text-align: center;
+  padding: 32px 20px 8px;
+}
+
+.category-hero h2 {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.category-hero p {
+  color: var(--color-muted);
+}
+
+@media (min-width: 768px) {
+  .category-hero h2 {
+    font-size: 2rem;
+  }
+}

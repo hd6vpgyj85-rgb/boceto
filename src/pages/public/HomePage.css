@@ -1,0 +1,95 @@
+.hero {
+  position: relative;
+  min-height: 560px;
+  display: flex;
+  align-items: center;
+  background: url("/images/hero.svg") center/cover no-repeat, var(--color-bg-alt);
+  color: #fff;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(43, 22, 32, 0.75), rgba(179, 53, 90, 0.35));
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 90px 20px 60px;
+  max-width: 560px;
+}
+
+.hero-badge {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hero-content h1 {
+  font-size: 2.4rem;
+}
+
+.hero-content p {
+  opacity: 0.92;
+  font-size: 1rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.hero-btn-outline {
+  color: #fff;
+  border-color: #fff;
+}
+
+.hero-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.hero-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 0.88rem;
+}
+
+.top-products {
+  padding: 56px 20px;
+}
+
+.top-products h2 {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 28px;
+}
+
+.top-products-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .hero-content h1 {
+    font-size: 3.2rem;
+  }
+
+  .top-products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}

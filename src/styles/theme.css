@@ -1,60 +1,33 @@
 :root {
-  /* ==========================================================================
-     [MODIFICAR MANUAL] Color de marca: no es editable desde el admin (vive en
-     CSS para no complicar el build). Cambia --color-accent y --color-accent-rgb
-     (y opcionalmente light/dark) para rebrandear toda la tienda a otro color.
-     ========================================================================== */
-  --color-accent: #00d9ff;
-  --color-accent-rgb: 0, 217, 255;
-  --color-accent-light: #6ceaff;
-  --color-accent-dark: #00a3c4;
+  --container-max: 1200px;
 
-  /* Fondo y superficies (tema oscuro) */
-  --color-bg: #0a0a0c;
-  --color-bg-elevated: #131316;
-  --color-bg-card: #18181c;
-  --color-bg-card-hover: #1f1f24;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-strong: rgba(255, 255, 255, 0.16);
+  --color-bg: #ffffff;
+  --color-bg-soft: #fdf2f6;
+  --color-bg-alt: #fbe9ef;
+  --color-ink: #2b1620;
+  --color-muted: #8a7078;
+  --color-border: #f0dde3;
 
-  /* Texto */
-  --color-text: #f5f4f0;
-  --color-text-muted: #a8a6ad;
-  --color-text-dim: #6d6b74;
-  --color-text-on-accent: #0a0a0c;
+  --color-primary: #b3355a;
+  --color-primary-dark: #8a2647;
+  --color-primary-light: #f6d9e3;
 
-  /* Estados */
-  --color-success: #35d68a;
-  --color-danger: #ff5470;
-  --color-star: #ffb84d;
+  --color-accent: #34d399;
+  --color-accent-dark: #0f9d6a;
 
-  /* Efecto neón: usar SIEMPRE rgba con el acento, nunca sólido, para que
-     se vea como brillo y no tape el fondo. */
-  --glow-accent-sm: 0 0 16px rgba(var(--color-accent-rgb), 0.25);
-  --glow-accent-md: 0 0 28px rgba(var(--color-accent-rgb), 0.35);
-  --glow-accent-lg: 0 0 48px rgba(var(--color-accent-rgb), 0.4);
-  --glow-accent-text: 0 0 18px rgba(var(--color-accent-rgb), 0.5);
+  --color-danger: #46333a;
+  --color-whatsapp: #ff5f9e;
 
-  /* Tipografía */
-  --font-display: "Bebas Neue", "Oswald", "Arial Narrow", sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Playfair Display", "Georgia", serif;
+  --font-body: "Poppins", "Inter", system-ui, sans-serif;
 
-  /* Radios */
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-full: 999px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
 
-  /* Espaciado de layout */
-  --container-max: 1280px;
-  --header-height: 72px;
+  --shadow-soft: 0 10px 30px rgba(179, 53, 90, 0.1);
+  --shadow-card: 0 6px 20px rgba(43, 22, 32, 0.08);
 
-  /* Animación */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --transition-fast: 150ms;
-  --transition-base: 280ms;
-  --transition-slow: 500ms;
-
-  color-scheme: dark;
+  --transition: 0.2s ease;
 }
