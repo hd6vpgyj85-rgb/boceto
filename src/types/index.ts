@@ -1,127 +1,133 @@
-export interface SiteSettings {
-  id: true;
-  business_name: string;
-  tagline: string;
-  logo_url: string | null;
-  whatsapp: string;
-  phone: string;
-  email: string;
-  address: string;
-  city: string;
-  hours: string;
-  instagram_url: string | null;
-  facebook_url: string | null;
-  tiktok_url: string | null;
-  map_url: string | null;
-  footer_note: string;
-  store_photo_url: string | null;
-  hero_title: string;
-  announcement: string;
-  currency: string;
-  updated_at: string;
-}
+export type Category = "fajas" | "ropa" | "bolsas" | "perfumes" | "accesorios";
 
-export interface Level {
-  slug: string;
-  label: string;
-  image_url: string | null;
-  tagline: string | null;
-  display_order: number;
-}
+export type ProductLevel = "compresion-moderada" | "compresion-alta" | "compresion-extra-firme";
 
-export interface Category {
-  slug: string;
-  name: string;
-  tagline: string | null;
-  banner_image_url: string | null;
-  display_order: number;
-}
+export const LEVEL_LABELS: Record<ProductLevel, string> = {
+  "compresion-moderada": "Compresión moderada",
+  "compresion-alta": "Compresión alta",
+  "compresion-extra-firme": "Compresión extra firme",
+};
 
-export interface HomeBanner {
-  id: true;
-  images: string[];
-}
+export const CATEGORIES: { slug: Category; name: string; tagline: string; image: string }[] = [
+  {
+    slug: "fajas",
+    name: "Fajas",
+    tagline: "Moldea tu figura con control real",
+    image: "/images/category-fajas.svg",
+  },
+  {
+    slug: "ropa",
+    name: "Ropa",
+    tagline: "Piezas para lucir todos los días",
+    image: "/images/category-ropa.svg",
+  },
+  {
+    slug: "bolsas",
+    name: "Bolsas",
+    tagline: "El accesorio que completa tu look",
+    image: "/images/category-bolsas.svg",
+  },
+  {
+    slug: "perfumes",
+    name: "Perfumes",
+    tagline: "Aromas que se quedan contigo",
+    image: "/images/category-perfumes.svg",
+  },
+  {
+    slug: "accesorios",
+    name: "Accesorios",
+    tagline: "Detalles que marcan la diferencia",
+    image: "/images/category-accesorios.svg",
+  },
+];
 
 export interface Product {
   id: string;
   name: string;
   price: number;
-  sale_price: number | null;
-  on_sale: boolean;
-  levels: string[];
-  category: string | null;
+  compareAtPrice?: number | null;
+  onSale?: boolean;
+  levels?: ProductLevel[];
+  category: Category;
   brand: string;
   stock: number;
-  vendor: string;
-  sizes: string[];
-  description: string;
-  images: string[];
-  cover_fit: "cover" | "contain";
-  featured: boolean;
-  created_at: string;
+  vendor?: string | null;
+  sizes?: string[];
+  description?: string | null;
+  images?: string[];
+  homeImageFit?: "cover" | "contain";
+  createdAt: string;
 }
 
-export type OrderStatus = "pending" | "processing" | "completed" | "cancelled";
+export interface ProductStat {
+  productId: string;
+  views: number;
+  cartAdds: number;
+  purchases: number;
+}
+
+export type OrderStatus = "pendiente" | "en proceso" | "completado" | "cancelado";
+
+export interface OrderCustomer {
+  nombre: string;
+  apellido: string;
+  telefono: string;
+  correo?: string;
+}
+
+export interface OrderAddress {
+  calle: string;
+  colonia: string;
+  ciudad: string;
+  estado: string;
+  codigoPostal: string;
+  pais: string;
+  referencias?: string;
+}
 
 export interface OrderItem {
-  product_id: string;
+  productId: string;
   name: string;
-  image: string | null;
-  price: number;
-  size: string | null;
+  level?: string;
   quantity: number;
+  price: number;
 }
 
 export interface Order {
   id: string;
+  createdAt: string;
   status: OrderStatus;
-  customer_name: string;
-  customer_phone: string;
-  customer_email: string | null;
-  address: string;
-  city: string;
-  payment_method: string;
-  notes: string | null;
+  customer: OrderCustomer;
+  address: OrderAddress;
+  paymentMethod: string;
+  notes?: string | null;
   items: OrderItem[];
-  subtotal: number;
-  discount: number;
-  coupon_code: string | null;
   total: number;
-  created_at: string;
-  archived_at: string | null;
+  archivedAt?: string | null;
 }
 
-export type ReviewStatus = "pending" | "approved" | "rejected";
+export type ReviewStatus = "pendiente" | "aprobada" | "rechazada";
 
 export interface Review {
   id: string;
   name: string;
   rating: number;
   quote: string;
-  image_url: string | null;
+  image?: string | null;
   status: ReviewStatus;
-  created_at: string;
-}
-
-export interface ProductStats {
-  product_id: string;
-  views: number;
-  cart_adds: number;
-  purchases: number;
+  createdAt: string;
 }
 
 export type DiscountType = "percentage" | "fixed";
-export type CouponScope = "single_product" | "cart";
 
 export interface Coupon {
   code: string;
-  discount_type: DiscountType;
-  discount_value: number;
-  scope: CouponScope;
-  usage_limit: number | null;
-  used_count: number;
+  discountType: DiscountType;
+  discountValue: number;
+  usageLimit: number;
+  timesUsed: number;
   active: boolean;
-  created_at: string;
+  createdAt: string;
 }
 
 export interface Customer {
@@ -129,29 +135,30 @@ export interface Customer {
   name: string;
   phone: string;
   token: string;
-  access_code: string | null;
-  purchases: number;
-  notes: string | null;
-  created_at: string;
+  purchasesCount: number;
+  notes?: string | null;
+  createdAt: string;
 }
 
 export interface LoyaltyTier {
   id: string;
-  required_purchases: number;
-  reward_description: string;
-  discount_percent: number | null;
-  coupon_scope: CouponScope;
-  display_order: number;
+  purchasesRequired: number;
+  rewardDescription: string;
+  discountPercent?: number | null;
+  createdAt: string;
 }
 
 export interface LoyaltyClaim {
-  id: string;
-  customer_id: string;
-  tier_id: string;
+  tierId: string;
+  requestedAt: string;
   claimed: boolean;
-  claimed_at: string | null;
-  coupon_code: string | null;
-  created_at: string;
+  claimedAt?: string | null;
+  couponCode?: string | null;
+}
+
+export interface LoyaltyClaimAdmin extends LoyaltyClaim {
+  id: string;
+  customerId: string;
 }
 
 export interface CartLine {
@@ -159,7 +166,7 @@ export interface CartLine {
   name: string;
   image: string | null;
   price: number;
-  size: string | null;
+  level?: string;
   quantity: number;
   stock: number;
 }

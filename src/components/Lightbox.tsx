@@ -1,114 +1,60 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeftIcon, ArrowRightIcon, CloseIcon } from "./Icons";
+import { createPortal } from "react-dom";
+import { useEffect } from "react";
 import "./Lightbox.css";
 
 interface LightboxProps {
   images: string[];
-  initialIndex: number;
+  index: number;
   onClose: () => void;
-  altPrefix?: string;
+  onNavigate: (index: number) => void;
 }
 
-export default function Lightbox({ images, initialIndex, onClose, altPrefix = "Imagen" }: LightboxProps) {
-  const [index, setIndex] = useState(initialIndex);
-  const [direction, setDirection] = useState<"next" | "prev" | "none">("none");
-  const [closing, setClosing] = useState(false);
-  const touchStartX = useRef<number | null>(null);
-  const count = images.length;
-
-  const go = useCallback(
-    (dir: 1 | -1) => {
-      if (count < 2) return;
-      setDirection(dir === 1 ? "next" : "prev");
-      setIndex((i) => (i + dir + count) % count);
-    },
-    [count],
-  );
-
-  const close = useCallback(() => {
-    setClosing(true);
-    window.setTimeout(onClose, 220);
-  }, [onClose]);
-
+export default function Lightbox({ images, index, onClose, onNavigate }: LightboxProps) {
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowRight") go(1);
-      if (e.key === "ArrowLeft") go(-1);
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") onNavigate((index + 1) % images.length);
+      if (e.key === "ArrowLeft") onNavigate((index - 1 + images.length) % images.length);
     };
-    window.addEventListener("keydown", handler);
-    const previousOverflow = document.body.style.overflow;
+    window.addEventListener("keydown", handleKey);
     document.body.style.overflow = "hidden";
     return () => {
-      window.removeEventListener("keydown", handler);
-      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = "";
     };
-  }, [close, go]);
+  }, [index, images.length, onClose, onNavigate]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current == null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
-    if (delta > 50) go(-1);
-    else if (delta < -50) go(1);
-    touchStartX.current = null;
-  };
-
-  return (
-    <div className={`lightbox-overlay ${closing ? "is-closing" : ""}`} onClick={close} role="dialog" aria-modal="true">
-      <button type="button" className="lightbox-close" onClick={close} aria-label="Cerrar">
-        <CloseIcon size={24} />
+  return createPortal(
+    <div className="lightbox-overlay" onClick={onClose}>
+      <button className="lightbox-close" onClick={onClose} aria-label="Cerrar">
+        ×
       </button>
-
-      {count > 1 && (
-        <span className="lightbox-counter">
-          {index + 1} / {count}
-        </span>
+      {images.length > 1 && (
+        <button
+          className="lightbox-nav lightbox-prev"
+          onClick={(e) => {
+            e.stopPropagation();
+            onNavigate((index - 1 + images.length) % images.length);
+          }}
+          aria-label="Anterior"
+        >
+          ‹
+        </button>
       )}
-
-      <div
-        className="lightbox-stage"
-        onClick={(e) => e.stopPropagation()}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {count > 1 && (
-          <button type="button" className="lightbox-arrow lightbox-arrow-left" onClick={() => go(-1)} aria-label="Anterior">
-            <ArrowLeftIcon size={22} />
-          </button>
-        )}
-        <img
-          key={index}
-          src={images[index]}
-          alt={`${altPrefix} ${index + 1}`}
-          className={`lightbox-image lightbox-image-${direction}`}
-        />
-        {count > 1 && (
-          <button type="button" className="lightbox-arrow lightbox-arrow-right" onClick={() => go(1)} aria-label="Siguiente">
-            <ArrowRightIcon size={22} />
-          </button>
-        )}
-      </div>
-
-      {count > 1 && (
-        <div className="lightbox-dots" onClick={(e) => e.stopPropagation()}>
-          {images.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              className={`lightbox-dot ${i === index ? "lightbox-dot-active" : ""}`}
-              onClick={() => {
-                setDirection(i > index ? "next" : "prev");
-                setIndex(i);
-              }}
-              aria-label={`Ir a imagen ${i + 1}`}
-            />
-          ))}
-        </div>
+      <img src={images[index]} alt="" onClick={(e) => e.stopPropagation()} />
+      {images.length > 1 && (
+        <button
+          className="lightbox-nav lightbox-next"
+          onClick={(e) => {
+            e.stopPropagation();
+            onNavigate((index + 1) % images.length);
+          }}
+          aria-label="Siguiente"
+        >
+          ›
+        </button>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }

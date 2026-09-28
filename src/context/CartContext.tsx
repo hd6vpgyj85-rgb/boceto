@@ -1,107 +1,80 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { CartLine } from "../types";
-import { supabase } from "../lib/supabase";
 
-const STORAGE_KEY = "boceto-cart";
+const STORAGE_KEY = "beautylat-cart";
 
 interface CartContextValue {
   lines: CartLine[];
-  addToCart: (line: Omit<CartLine, "quantity">, quantity?: number) => void;
-  updateQuantity: (productId: string, size: string | null, quantity: number) => void;
-  removeFromCart: (productId: string, size: string | null) => void;
-  clearCart: () => void;
-  itemCount: number;
+  addLine: (line: CartLine) => void;
+  updateQuantity: (productId: string, level: string | undefined, quantity: number) => void;
+  removeLine: (productId: string, level: string | undefined) => void;
+  clear: () => void;
   subtotal: number;
-  lastAdded: (CartLine & { addedAt: number }) | null;
-  dismissLastAdded: () => void;
+  count: number;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-function lineKey(productId: string, size: string | null) {
-  return `${productId}::${size ?? ""}`;
+function lineKey(productId: string, level?: string) {
+  return `${productId}::${level ?? ""}`;
 }
 
-function loadCart(): CartLine[] {
+function loadInitialLines(): CartLine[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    return raw ? (JSON.parse(raw) as CartLine[]) : [];
   } catch {
     return [];
   }
 }
 
-function saveCart(lines: CartLine[]): boolean {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [lines, setLines] = useState<CartLine[]>(() => loadCart());
-  const [lastAdded, setLastAdded] = useState<CartContextValue["lastAdded"]>(null);
+  const [lines, setLines] = useState<CartLine[]>(loadInitialLines);
 
   useEffect(() => {
-    saveCart(lines);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
   }, [lines]);
 
-  const addToCart = useCallback<CartContextValue["addToCart"]>((line, quantity = 1) => {
-    const max = line.stock > 0 ? line.stock : 99;
+  const addLine = (line: CartLine) => {
     setLines((prev) => {
-      const key = lineKey(line.productId, line.size);
-      const existing = prev.find((l) => lineKey(l.productId, l.size) === key);
+      const existing = prev.find((l) => lineKey(l.productId, l.level) === lineKey(line.productId, line.level));
       if (existing) {
         return prev.map((l) =>
-          lineKey(l.productId, l.size) === key ? { ...l, quantity: Math.min(l.quantity + quantity, max) } : l,
+          lineKey(l.productId, l.level) === lineKey(line.productId, line.level)
+            ? { ...l, quantity: Math.min(l.quantity + line.quantity, l.stock) }
+            : l
         );
       }
-      return [...prev, { ...line, quantity: Math.min(quantity, max) }];
+      return [...prev, line];
     });
-    setLastAdded({ ...line, quantity, addedAt: Date.now() });
-    void supabase.rpc("increment_product_stat", { p_product_id: line.productId, p_field: "cart_adds" });
-  }, []);
+  };
 
-  const updateQuantity = useCallback<CartContextValue["updateQuantity"]>((productId, size, quantity) => {
-    const key = lineKey(productId, size);
+  const updateQuantity = (productId: string, level: string | undefined, quantity: number) => {
     setLines((prev) =>
-      quantity <= 0
-        ? prev.filter((l) => lineKey(l.productId, l.size) !== key)
-        : prev.map((l) => (lineKey(l.productId, l.size) === key ? { ...l, quantity } : l)),
+      prev
+        .map((l) =>
+          lineKey(l.productId, l.level) === lineKey(productId, level)
+            ? { ...l, quantity: Math.max(1, Math.min(quantity, l.stock)) }
+            : l
+        )
+        .filter((l) => l.quantity > 0)
     );
-  }, []);
+  };
 
-  const removeFromCart = useCallback<CartContextValue["removeFromCart"]>((productId, size) => {
-    const key = lineKey(productId, size);
-    setLines((prev) => prev.filter((l) => lineKey(l.productId, l.size) !== key));
-  }, []);
+  const removeLine = (productId: string, level: string | undefined) => {
+    setLines((prev) => prev.filter((l) => lineKey(l.productId, l.level) !== lineKey(productId, level)));
+  };
 
-  const clearCart = useCallback(() => setLines([]), []);
-  const dismissLastAdded = useCallback(() => setLastAdded(null), []);
+  const clear = () => setLines([]);
 
-  const itemCount = useMemo(() => lines.reduce((sum, l) => sum + l.quantity, 0), [lines]);
   const subtotal = useMemo(() => lines.reduce((sum, l) => sum + l.price * l.quantity, 0), [lines]);
+  const count = useMemo(() => lines.reduce((sum, l) => sum + l.quantity, 0), [lines]);
 
-  const value = useMemo(
-    () => ({
-      lines,
-      addToCart,
-      updateQuantity,
-      removeFromCart,
-      clearCart,
-      itemCount,
-      subtotal,
-      lastAdded,
-      dismissLastAdded,
-    }),
-    [lines, addToCart, updateQuantity, removeFromCart, clearCart, itemCount, subtotal, lastAdded, dismissLastAdded],
+  return (
+    <CartContext.Provider value={{ lines, addLine, updateQuantity, removeLine, clear, subtotal, count }}>
+      {children}
+    </CartContext.Provider>
   );
-
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {

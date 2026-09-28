@@ -1,0 +1,48 @@
+.category-photo-banner {
+  height: 220px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+}
+
+.category-photo-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(43, 22, 32, 0.1), rgba(43, 22, 32, 0.65));
+}
+
+.category-photo-banner-overlay {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  padding: 24px 20px;
+  width: 100%;
+}
+
+.category-photo-banner-overlay h1 {
+  font-size: 2rem;
+}
+
+.category-photo-banner-overlay p {
+  margin-top: 6px;
+  opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+  .category-photo-banner {
+    height: 320px;
+  }
+
+  .category-photo-banner-overlay {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 32px 20px;
+  }
+
+  .category-photo-banner-overlay h1 {
+    font-size: 2.6rem;
+  }
+}

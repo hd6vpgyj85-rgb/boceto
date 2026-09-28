@@ -1,204 +1,92 @@
 import { useEffect, useRef, useState } from "react";
-import { useSiteSettings } from "../hooks/useSiteData";
-import { useCart } from "../context/CartContext";
-import { buildWhatsAppUrl } from "../lib/whatsapp";
-import { WhatsAppIcon } from "./Icons";
+import { getWhatsAppUrl, storeInfo } from "../data/store";
 import "./WhatsAppButton.css";
 
-const HINT_KEY = "boceto-wa-hint-seen";
-const POSITION_KEY = "boceto-wa-position";
-const DRAG_THRESHOLD = 6;
+const STORAGE_KEY = "beautylat-whatsapp-btn-pos";
+const SIZE = 60;
+const MARGIN = 16;
 
-type Side = "left" | "right";
-
-interface SavedPosition {
-  side: Side;
-  y: number;
-}
-
-interface DragStart {
-  pointerX: number;
-  pointerY: number;
+interface Position {
   x: number;
   y: number;
-  moved: boolean;
 }
 
-const DEFAULT_POSITION: SavedPosition = { side: "right", y: 1 };
-
-function readSeen(): boolean {
-  try {
-    return sessionStorage.getItem(HINT_KEY) === "1";
-  } catch {
-    return true;
-  }
-}
-
-function markSeen(): boolean {
-  try {
-    sessionStorage.setItem(HINT_KEY, "1");
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function readPosition(): SavedPosition {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(POSITION_KEY) ?? "null");
-    if (parsed && (parsed.side === "left" || parsed.side === "right") && typeof parsed.y === "number") {
-      return { side: parsed.side, y: Math.min(1, Math.max(0, parsed.y)) };
-    }
-    return DEFAULT_POSITION;
-  } catch {
-    return DEFAULT_POSITION;
-  }
-}
-
-function savePosition(position: SavedPosition): boolean {
-  try {
-    localStorage.setItem(POSITION_KEY, JSON.stringify(position));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function getMetrics() {
-  const mobile = window.innerWidth <= 640;
-  const size = mobile ? 52 : 56;
-  const margin = mobile ? 16 : 22;
-  const minY = 84;
+function clamp(pos: Position): Position {
+  const maxX = window.innerWidth - SIZE - MARGIN;
+  const maxY = window.innerHeight - SIZE - MARGIN;
   return {
-    size,
-    margin,
-    minY,
-    maxX: window.innerWidth - size - margin,
-    maxY: Math.max(minY, window.innerHeight - size - margin),
+    x: Math.min(Math.max(pos.x, MARGIN), Math.max(maxX, MARGIN)),
+    y: Math.min(Math.max(pos.y, MARGIN), Math.max(maxY, MARGIN)),
   };
 }
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+function loadInitialPosition(): Position {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return clamp(JSON.parse(raw));
+  } catch {
+    // ignore
+  }
+  return clamp({ x: window.innerWidth - SIZE - MARGIN, y: window.innerHeight - SIZE - MARGIN * 4 });
+}
 
 export default function WhatsAppButton() {
-  const { settings } = useSiteSettings();
-  const { lastAdded } = useCart();
-  const [hint, setHint] = useState(false);
-  const [saved, setSaved] = useState<SavedPosition>(readPosition);
-  const [drag, setDrag] = useState<{ x: number; y: number } | null>(null);
-  const [, setViewport] = useState(0);
-  const justDragged = useRef(false);
+  const [position, setPosition] = useState<Position>(loadInitialPosition);
+  const [dragging, setDragging] = useState(false);
+  const dragMoved = useRef(false);
+  const offset = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (readSeen()) return;
-    const show = window.setTimeout(() => setHint(true), 6000);
-    const hide = window.setTimeout(() => {
-      setHint(false);
-      markSeen();
-    }, 13000);
-    return () => {
-      window.clearTimeout(show);
-      window.clearTimeout(hide);
-    };
+    const handleResize = () => setPosition((p) => clamp(p));
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    const onResize = () => setViewport((n) => n + 1);
-    window.addEventListener("resize", onResize);
-    window.addEventListener("orientationchange", onResize);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("orientationchange", onResize);
-    };
-  }, []);
-
-  if (!settings?.whatsapp) return null;
-
-  const metrics = getMetrics();
-  const resting = {
-    x: saved.side === "left" ? metrics.margin : metrics.maxX,
-    y: metrics.minY + saved.y * (metrics.maxY - metrics.minY),
-  };
-  const position = drag ?? resting;
-  const message = `¡Hola, ${settings.business_name}! Tengo una pregunta sobre sus productos.`;
-
-  const pointFrom = (e: PointerEvent, s: DragStart) => {
-    const m = getMetrics();
-    return {
-      x: clamp(s.x + e.clientX - s.pointerX, m.margin, m.maxX),
-      y: clamp(s.y + e.clientY - s.pointerY, m.minY, m.maxY),
-    };
+  const handlePointerDown = (e: React.PointerEvent) => {
+    dragMoved.current = false;
+    offset.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+    setDragging(true);
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
   };
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLAnchorElement>) => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-    const s: DragStart = { pointerX: e.clientX, pointerY: e.clientY, x: position.x, y: position.y, moved: false };
-
-    const onMove = (ev: PointerEvent) => {
-      if (!s.moved) {
-        if (Math.hypot(ev.clientX - s.pointerX, ev.clientY - s.pointerY) < DRAG_THRESHOLD) return;
-        s.moved = true;
-        setHint(false);
-      }
-      ev.preventDefault();
-      setDrag(pointFrom(ev, s));
-    };
-
-    const onEnd = (ev: PointerEvent) => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onEnd);
-      window.removeEventListener("pointercancel", onEnd);
-      if (!s.moved) return;
-      justDragged.current = true;
-      window.setTimeout(() => {
-        justDragged.current = false;
-      }, 350);
-      const m = getMetrics();
-      const point = pointFrom(ev, s);
-      const next: SavedPosition = {
-        side: point.x + m.size / 2 < window.innerWidth / 2 ? "left" : "right",
-        y: m.maxY > m.minY ? (point.y - m.minY) / (m.maxY - m.minY) : 1,
-      };
-      setSaved(next);
-      savePosition(next);
-      setDrag(null);
-    };
-
-    window.addEventListener("pointermove", onMove, { passive: false });
-    window.addEventListener("pointerup", onEnd);
-    window.addEventListener("pointercancel", onEnd);
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!dragging) return;
+    dragMoved.current = true;
+    const next = clamp({ x: e.clientX - offset.current.x, y: e.clientY - offset.current.y });
+    setPosition(next);
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!justDragged.current) return;
-    e.preventDefault();
-    justDragged.current = false;
+  const handlePointerUp = () => {
+    if (dragging) {
+      setDragging(false);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(position));
+    }
   };
 
-  const raised = !!lastAdded && !drag && saved.y > 0.6;
+  const handleClick = (e: React.MouseEvent) => {
+    if (dragMoved.current) {
+      e.preventDefault();
+      dragMoved.current = false;
+    }
+  };
 
   return (
-    <div
-      className={`whatsapp-fab-wrap is-${saved.side} ${drag ? "is-dragging" : ""} ${raised ? "is-raised" : ""}`}
-      style={{ left: position.x, top: position.y }}
+    <a
+      href={getWhatsAppUrl(`Hola ${storeInfo.name}, tengo una pregunta 💬`)}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`whatsapp-fab ${dragging ? "is-dragging" : ""}`}
+      style={{ right: "auto", bottom: "auto", left: position.x, top: position.y }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      onClick={handleClick}
+      aria-label="Escríbenos por WhatsApp"
     >
-      <span className={`whatsapp-fab-hint ${hint && !drag ? "is-visible" : ""}`}>¿Tienes dudas? Escríbenos</span>
-      <a
-        href={buildWhatsAppUrl(settings.whatsapp, message)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="whatsapp-fab"
-        aria-label="Escribir por WhatsApp"
-        title="Escríbenos por WhatsApp. Puedes arrastrar este botón."
-        draggable={false}
-        onDragStart={(e) => e.preventDefault()}
-        onPointerDown={handlePointerDown}
-        onClick={handleClick}
-        onMouseEnter={() => !drag && setHint(true)}
-        onMouseLeave={() => setHint(false)}
-      >
-        <WhatsAppIcon size={26} />
-      </a>
-    </div>
+      <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor" aria-hidden="true">
+        <path d="M16.04 3C9.4 3 4 8.32 4 14.87c0 2.27.63 4.39 1.72 6.21L4 29l8.13-1.68a12.9 12.9 0 0 0 3.91.6c6.64 0 12.04-5.32 12.04-11.87S22.68 3 16.04 3Zm0 21.6c-1.29 0-2.55-.24-3.72-.7l-.27-.1-4.83 1 1.02-4.62-.17-.29a9.68 9.68 0 0 1-1.5-5.02c0-5.36 4.42-9.72 9.87-9.72s9.87 4.36 9.87 9.72-4.42 9.73-9.87 9.73Zm5.4-7.28c-.29-.15-1.74-.86-2.01-.96-.27-.1-.47-.15-.66.15-.2.29-.76.95-.93 1.15-.17.19-.34.22-.63.07-.29-.15-1.23-.45-2.35-1.44-.87-.77-1.46-1.72-1.63-2.01-.17-.29-.02-.45.13-.59.13-.13.29-.34.44-.51.15-.17.19-.29.29-.49.1-.19.05-.36-.02-.51-.07-.15-.66-1.58-.9-2.17-.24-.57-.48-.49-.66-.5h-.56c-.19 0-.51.07-.78.36-.27.29-1.02 1-1.02 2.44s1.05 2.83 1.19 3.03c.15.19 2.06 3.15 5 4.41.7.3 1.24.48 1.67.61.7.22 1.34.19 1.84.12.56-.08 1.74-.71 1.98-1.4.24-.68.24-1.27.17-1.4-.07-.12-.27-.19-.56-.34Z"/>
+      </svg>
+    </a>
   );
 }
