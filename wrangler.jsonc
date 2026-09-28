@@ -6,6 +6,12 @@
   // proyecto en Cloudflare, Workers Builds falla.
   "name": "websiteboceto",
   "compatibility_date": "2024-12-01",
+  // Genera dist/ automáticamente antes de "wrangler deploy". Esto hace el
+  // deploy robusto aunque el "Build command" del dashboard de Cloudflare
+  // esté vacío o no se haya configurado.
+  "build": {
+    "command": "npm install && npm run build"
+  },
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application"
