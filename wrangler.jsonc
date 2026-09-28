@@ -1,7 +1,10 @@
 {
   // [MODIFICAR MANUAL] Nombre del Worker: debe coincidir con el nombre del
-  // proyecto creado en el dashboard de Cloudflare (Workers & Pages).
-  "name": "beautylat",
+  // proyecto creado en el dashboard de Cloudflare (Workers & Pages). Este
+  // repositorio ya está conectado a un Worker existente llamado
+  // "websiteboceto" — si lo renombras aquí sin renombrar también el
+  // proyecto en Cloudflare, Workers Builds falla.
+  "name": "websiteboceto",
   "compatibility_date": "2024-12-01",
   "assets": {
     "directory": "./dist",
